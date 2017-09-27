@@ -1,0 +1,72 @@
+#  _    _       _       _____           _
+# | |  | |     | |     |  __ \         | |
+# | |__| |_   _| |__   | |__) |_ _ _ __| | _____  _   _ _ __
+# |  __  | | | | '_ \  |  ___/ _` | '__| |/ / _ \| | | | '__|
+# | |  | | |_| | |_) | | |  | (_| | |  |   < (_) | |_| | |
+# |_|  |_|\__,_|_.__/  |_|   \__,_|_|  |_|\_\___/ \__,_|_|
+#
+# This is the default configuration file for the "HubParkour" by Block2Block.
+#
+# Do not remove any of the different values. They cannot be disabled, however
+# I may introduce a system for them to be disabled in the near future if there
+# is enough demand.
+#
+# I have worked quite hard on the plugin to make it as configurable as possible. Please
+# rate it on the Spigot page! Every review helps!
+#
+# If you have any questions, bug reports or suggestions, feel free to add it as an
+# issue on the GitHub.
+
+Messages:
+    Holograms:
+        Start: "&9&lParkour Start"
+        End: "&9&lParkour End"
+        Checkpoint: "&9&lCheckpoint #{checkpoint}"
+    Commands:
+        No-Arguments: "&2Parkour>> &7Parkour Help:\n&a/parkour reset &7- Sends you back to the start.\n&a/parkour checkpoint &7- Teleports you to the last checkpoint you reached."
+        Unknown-Subcommand: "&2Parkour>> &7That sub-command is unknown!"
+        No-Permission: "&2Parkour>> &7You do not have permission to execute this command."
+        Reset:
+            Successful: "&2Parkour>> &7You have been teleported to the start."
+            Not-Started-Parkour: "&2Parkour>> &7You must start the parkour in order to reset!"
+        Checkpoint:
+            Successful: "&2Parkour>> &7You have been teleported to your last checkpoint."
+            Not-Started-Parkour: "&2Parkour>> &7You must start the parkour in order to teleport to a checkpoint!"
+        Top3: "&2Parkour>> &7The top 3 times are:\n&a#1 &7- &a{player1-name} &7- &a{player1-time} &7seconds.\n&a#2 &7- &a{player2-name} &7- &a{player2-time} &7seconds.\n&a#3 &7- &a{player3-name} &7- &a{player3-time} &7seconds."
+        Admin:
+            SetStart:
+                Successful: "&2Parkour>> &7You have successfully set the startpoint."
+                Invalid-Location: "&2Parkour>> &7That location is not valid! Please stand over a wooden pressure plate to set the spawn."
+            SetEnd:
+                Successful: "&2Parkour>> &7You have successfully set the endpoint."
+                Invalid-Location: "&2Parkour>> &7That location is not valid! Please stand over an iron pressure plate to set the send."
+            SetRestart:
+                Successful: "&2Parkour>> &7You have successfully set the restart point."
+            SetCheck:
+                Successful: "&2Parkour>> &7You have successfully set checkpoint #{checkpoint}."
+                Invalid-Location: "&2Parkour>> &7That location is not valid! Please stand over an gold pressure plate to set a checkpoint."
+                Number-Format-Error: "&2Parkour>> &7Sorry, that is not a valid checkpoint!"
+    Parkour:
+        Started: "&2Parkour>> &7You have started the parkour!"
+        Restarted: "&2Parkour>> &7You have restarted the parkour! Your time has been reset to 0!"
+        Checkpoints:
+            Reached: "&2Parkour>> &7You have reached checkpoint #{checkpoint}!"
+            Not-Started: "&2Parkour>> &7You must start the parkour in order to reach checkpoints!"
+        End:
+            Beat-Previous-Personal-Best: "&2Parkour>> &7You beat your previous record and you managed to complete the parkour in {time} seconds!"
+            Not-Beat-Previous-Personal-Best: "&2Parkour>> &7You didn't beat your previous record, but you managed to complete the parkour in {time} seconds!"
+            First-Time: "&2Parkour>> &7Well done! You completed the parkour in {time} seconds!"
+            Not-Started: "&2Parkour>> &7You must start the parkour in order to finish it."
+            Failed:
+                Fly: "&2Parkour>> &7You are not allowed to fly while doing the parkour. Parkour failed!"
+                Not-Enough-Checkpoints: "&2Parkour>> &7You did not reach enough checkpoints, parkour failed!"
+        Leaderboard:
+            Still-First: "&2Parkour>> &7You are still in 1st place!"
+            Now-First: "&2Parkour>> &7Well done! You have entered 1st place!"
+            Still-Second: "&2Parkour>> &7You are still in 2nd place!"
+            Now-Second: "&2Parkour>> &7Well done! You have entered 2nd place!"
+            Still-Third: "&2Parkour>> &7You are still in 3rd place!"
+            Now-Third: "&2Parkour>> &7Well done! You have entered 3rd place!"
+Settings:
+    Holograms: false
+    Must-Complete-All-Checkpoints: true
