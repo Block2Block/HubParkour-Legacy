@@ -5,10 +5,7 @@ import com.gmail.filoghost.holographicdisplays.api.Hologram;
 import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 import com.gmail.filoghost.holographicdisplays.api.line.TextLine;
 import io.github.Block2Block.HubParkour.Commands.CommandParkour;
-import io.github.Block2Block.HubParkour.Listeners.LeaveListener;
-import io.github.Block2Block.HubParkour.Listeners.PlayerToggleFlyListener;
-import io.github.Block2Block.HubParkour.Listeners.PressurePlateInteractListener;
-import io.github.Block2Block.HubParkour.Listeners.TimerEvent;
+import io.github.Block2Block.HubParkour.Listeners.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -32,8 +29,8 @@ public class Main extends JavaPlugin {
     private static File leaderboardFile;
     private static FileConfiguration leaderboard;
 
-    public static List<Hologram> holograms = new ArrayList<>();
-    public static boolean useHolographicDisplays;
+    private static List<Hologram> holograms = new ArrayList<>();
+    private static boolean useHolographicDisplays;
 
     private static Main instance;
 
@@ -49,7 +46,7 @@ public class Main extends JavaPlugin {
     public void onEnable() {
         useHolographicDisplays = Bukkit.getPluginManager().isPluginEnabled("HolographicDisplays");
         loadConfigs();
-        registerListeners(new LeaveListener(), new PlayerToggleFlyListener(), new PressurePlateInteractListener());
+        registerListeners(new LeaveListener(), new PlayerToggleFlyListener(), new PressurePlateInteractListener(), new JoinListener());
         getCommand("parkour").setExecutor(new CommandParkour());
         getLogger().info("HubParkour has been successfully enabled.");
         if (!useHolographicDisplays) {
@@ -153,7 +150,7 @@ public class Main extends JavaPlugin {
 
     public static List<Hologram> getHolograms() { return holograms; }
 
-    public void loadYamls() {
+    private void loadYamls() {
         try {
             config.load(configFile);
             storage.load(storageFile);
@@ -225,7 +222,7 @@ public class Main extends JavaPlugin {
 
 
 
-    public void generateHolograms() {
+    private void generateHolograms() {
         for (String s : getStorage().getKeys(false)) {
             if (s.equalsIgnoreCase("spawn")) {
                 Location l = (Location) getStorage().get("spawn.location");
