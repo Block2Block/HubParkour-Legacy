@@ -116,6 +116,9 @@ public class PressurePlateInteractListener implements Listener {
                         parkourChecks.put(e.getPlayer(), i);
                         checksVisited.put(e.getPlayer(), checksVisited.get(e.getPlayer())+1);
                         e.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&',Main.getMainConfig().getString("Messages.Parkour.Checkpoints.Reached")).replace("{checkpoint}","" + i));
+                        if (Main.getMainConfig().getBoolean("Settings.Rewards.Checkpoint-Reward.Enabled")) {
+                            Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), Main.getMainConfig().getString("Settings.Rewards.Checkpoint-Reward.Command"));
+                        }
                     }
                 }
             } else {
@@ -130,6 +133,16 @@ public class PressurePlateInteractListener implements Listener {
                                 e.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&',Main.getMainConfig().getString("Messages.Parkour.End.Failed.Not-Enough-Checkpoints")));
                                 PressurePlateInteractListener.removeParkourPTimes(e.getPlayer());
                                 checksVisited.remove(e.getPlayer());
+                            }
+                        }
+                    }
+                    if (Main.getMainConfig().getBoolean("Settings.Rewards.Finish-Reward.Enabled")) {
+                        if (!Main.getLeaderboard().isSet("times." + e.getPlayer().getUniqueId() + ".time")) {
+                            Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), Main.getMainConfig().getString("Settings.Rewards.Finish-Reward.First-Time-Command"));
+                        }
+                        if (!Main.getMainConfig().getBoolean("Settings.Rewards.Finish-Reward.First-Time-Only")) {
+                            if (Main.getLeaderboard().isSet("times." + e.getPlayer().getUniqueId() + ".time")) {
+                                Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), Main.getMainConfig().getString("Settings.Rewards.Finish-Reward.After-Completed-Command"));
                             }
                         }
                     }

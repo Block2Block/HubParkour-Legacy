@@ -16,6 +16,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -76,7 +78,31 @@ public class Main extends JavaPlugin {
                     PressurePlateInteractListener.getCheckLocations().add(l);
                 }
             }
+            if (getMainConfig().getBoolean("Settings.Version-Checker")) {
+                if (newVersionCheck()) {
+                    getLogger().info("There is a new version out! I highly recommend you download the new version!");
+                }
+            }
         }
+    }
+
+    public boolean newVersionCheck() {
+        try {
+            HttpURLConnection c = (HttpURLConnection)new URL("http://www.spigotmc.org/api/general.php").openConnection();
+            c.setDoOutput(true);
+            c.setRequestMethod("POST");
+            c.getOutputStream().write(("key=98BE0FE67F88AB82B4C197FAF1DC3B69206EFDCC4D3B80FC83A00037510B99B4&resource=47713").getBytes("UTF-8"));
+            String oldVersion = this.getDescription().getVersion();
+            String newVersion = new BufferedReader(new InputStreamReader(c.getInputStream())).readLine().replaceAll("[a-zA-Z ]", "");
+            if(!newVersion.equals(oldVersion)) {
+                return true;
+            }
+            return false;
+        }
+        catch(Exception e) {
+            getLogger().info("Unable to check for new versions.");
+        }
+        return false;
     }
 
     @Override
@@ -150,7 +176,17 @@ public class Main extends JavaPlugin {
 
     public static List<Hologram> getHolograms() { return holograms; }
 
-    private void loadYamls() {
+    public static void loadYamls() {
+        try {
+            config.load(configFile);
+            storage.load(storageFile);
+            leaderboard.load(leaderboardFile);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void reloadYamls() {
         try {
             config.load(configFile);
             storage.load(storageFile);

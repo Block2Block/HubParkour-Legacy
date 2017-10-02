@@ -150,6 +150,19 @@ public class CommandParkour implements CommandExecutor {
                         sender.sendMessage(ChatColor.translateAlternateColorCodes('&', Main.getMainConfig().getString("Messages.Commands.No-Permission")));
                     }
                     break;
+                case "reload":
+                    if (sender.hasPermission("hubparkour.admin")) {
+                        try {
+                            Main.loadYamls();
+                            sender.sendMessage(ChatColor.translateAlternateColorCodes('&',Main.getMainConfig().getString("Messages.Commands.Admin.Reload.Successful")));
+                        } catch (Exception e) {
+                            sender.sendMessage(ChatColor.translateAlternateColorCodes('&',Main.getMainConfig().getString("Messages.Commands.Admin.Reload.Failed")));
+                        }
+                        break;
+                    } else {
+                        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', Main.getMainConfig().getString("Messages.Commands.No-Permission")));
+                        break;
+                    }
                 default:
                     sender.sendMessage(ChatColor.translateAlternateColorCodes('&', Main.getMainConfig().getString("Messages.Commands.Unknown-Subcommand")));
                     break;

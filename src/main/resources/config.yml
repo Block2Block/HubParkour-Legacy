@@ -55,6 +55,9 @@ Messages:
 
         #Admin command messages.
         Admin:
+            Reload:
+                Successful: "&2Parkour>> &7Reload successful!"
+                Failed: "&2Parkour>> &7The reload failed. Please make sure that you have formatted the file correctly."
             SetStart:
                 Successful: "&2Parkour>> &7You have successfully set the startpoint."
                 Invalid-Location: "&2Parkour>> &7That location is not valid! Please stand over a wooden pressure plate to set the spawn."
@@ -73,12 +76,12 @@ Messages:
         Started: "&2Parkour>> &7You have started the parkour!"
         Restarted: "&2Parkour>> &7You have restarted the parkour! Your time has been reset to 0!"
         Checkpoints:
-            Reached: "&2Parkour>> &7You have reached checkpoint #{checkpoint}!"
+            Reached: "&2Parkour>> &7You have reached checkpoint #{checkpoint}! You have received $100 as a reward!"
             Not-Started: "&2Parkour>> &7You must start the parkour in order to reach checkpoints!"
         End:
-            Beat-Previous-Personal-Best: "&2Parkour>> &7You beat your previous record and you managed to complete the parkour in {time} seconds!"
-            Not-Beat-Previous-Personal-Best: "&2Parkour>> &7You didn't beat your previous record, but you managed to complete the parkour in {time} seconds!"
-            First-Time: "&2Parkour>> &7Well done! You completed the parkour in {time} seconds!"
+            Beat-Previous-Personal-Best: "&2Parkour>> &7You beat your previous record and you managed to complete the parkour in {time} seconds! You have received $100 for finishing the parkour!"
+            Not-Beat-Previous-Personal-Best: "&2Parkour>> &7You didn't beat your previous record, but you managed to complete the parkour in {time} seconds! You have received $100 for finishing the parkour!"
+            First-Time: "&2Parkour>> &7Well done! You completed the parkour in {time} seconds! You received $1000 as a reward for completing the parkour for the first time!"
             Not-Started: "&2Parkour>> &7You must start the parkour in order to finish it."
             Failed:
                 Fly: "&2Parkour>> &7You are not allowed to fly while doing the parkour. Parkour failed!"
@@ -96,3 +99,13 @@ Settings:
     Holograms: false
     Must-Complete-All-Checkpoints: true
     Join-Message: true
+    Version-Checker: true
+    Rewards:
+        Checkpoint-Reward:
+            Enabled: true
+            Command: "money give {username} 100"
+        Finish-Reward:
+            Enabled: true
+            First-Time-Only: false
+            First-Time-Command: "money give {username} 1000"
+            After-Completed-Command: "money give {username} 100"
