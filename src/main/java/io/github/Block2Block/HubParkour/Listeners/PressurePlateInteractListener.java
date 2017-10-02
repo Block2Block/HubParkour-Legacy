@@ -98,12 +98,14 @@ public class PressurePlateInteractListener implements Listener {
                     parkourChecks.put(e.getPlayer(), 0);
                     checksVisited.remove(e.getPlayer());
                     checksVisited.put(e.getPlayer(), 0);
+                    e.getPlayer().setFlying(false);
                 } else {
                     e.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&',Main.getMainConfig().getString("Messages.Parkour.Started")));
                     parkourPlayers.add(e.getPlayer());
                     parkourTimes.put(e.getPlayer(), 0.00);
                     parkourChecks.put(e.getPlayer(), 0);
                     checksVisited.put(e.getPlayer(), 0);
+                    e.getPlayer().setFlying(false);
                 }
             }
         } else if (e.getPlayer().getLocation().getBlock().getType().equals(Material.GOLD_PLATE)) {

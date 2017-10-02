@@ -14,7 +14,7 @@ public class PlayerToggleFlyListener implements Listener {
     public void onPlayerFly(PlayerToggleFlightEvent e) {
         if (e.isFlying()) {
             if (PressurePlateInteractListener.removeParkourPlayersBoo(e.getPlayer())) {
-                e.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&',m.getMainConfig().getString("Messages.Parkour.Failed.Fly")));
+                e.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&',m.getMainConfig().getString("Messages.Parkour.End.Failed.Fly")));
                 PressurePlateInteractListener.removeParkourPTimes(e.getPlayer());
                 PressurePlateInteractListener.removeChecksVisited(e.getPlayer());
             }
