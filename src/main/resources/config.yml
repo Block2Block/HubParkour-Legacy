@@ -70,6 +70,7 @@ Messages:
                 Successful: "&2Parkour>> &7You have successfully set checkpoint #{checkpoint}."
                 Invalid-Location: "&2Parkour>> &7That location is not valid! Please stand over an gold pressure plate to set a checkpoint."
                 Number-Format-Error: "&2Parkour>> &7Sorry, that is not a valid checkpoint!"
+                Invalid-Arguments: "&2Parkour>> &7Invalid Arguments. Correct Usage: &a/parkour setcheck {checkpoint}"
 
     #Messages displayed while the user is doing parkour.
     Parkour:

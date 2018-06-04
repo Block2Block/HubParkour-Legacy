@@ -125,6 +125,9 @@ public class CommandParkour implements CommandExecutor {
                             } catch(NumberFormatException e) {
                                 sender.sendMessage(ChatColor.translateAlternateColorCodes('&',Main.getMainConfig().getString("Messages.Commands.Admin.SetCheck.Number-Format-Error")));
                                 return true;
+                            } catch(ArrayIndexOutOfBoundsException e) {
+                                sender.sendMessage(ChatColor.translateAlternateColorCodes('&',Main.getMainConfig().getString("Messages.Commands.Admin.SetCheck.Invalid Arguments")));
+                                return true;
                             }
                             Main.addStorage(args[1] + ".location", ((Player) sender).getLocation().getBlock().getLocation());
                             Location l = ((Player) sender).getLocation().getBlock().getLocation();
