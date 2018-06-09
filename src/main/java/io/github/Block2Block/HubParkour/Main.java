@@ -201,17 +201,17 @@ public class Main extends JavaPlugin {
         if (leaderboard.get("leaderboard.1.UUID").equals("N/A")) {
             leaderboard.set("leaderboard.1.UUID", "N/A");
             leaderboard.set("leaderboard.1.PlayerName", "No-one");
-            leaderboard.set("leaderboard.1.Time", 2147483646.0);
+            leaderboard.set("leaderboard.1.Time", 2147483646);
         }
         if (leaderboard.get("leaderboard.2.UUID").equals("N/A")) {
             leaderboard.set("leaderboard.2.UUID", "N/A");
             leaderboard.set("leaderboard.2.PlayerName", "No-one");
-            leaderboard.set("leaderboard.2.Time", 2147483646.0);
+            leaderboard.set("leaderboard.2.Time", 2147483646);
         }
         if (leaderboard.get("leaderboard.3.UUID").equals("N/A")) {
             leaderboard.set("leaderboard.3.UUID", "N/A");
             leaderboard.set("leaderboard.3.PlayerName", "No-one");
-            leaderboard.set("leaderboard.3.Time", 2147483646.0);
+            leaderboard.set("leaderboard.3.Time", 2147483646);
         }
 
         try {

@@ -51,7 +51,7 @@ public class CommandParkour implements CommandExecutor {
                     break;
                 case "top3":
                 case "leaderboard":
-                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', Main.getMainConfig().getString("Messages.Commands.Top3").replace("{player1-name}",Main.getLeaderboard().getString("leaderboard.1.PlayerName")).replace("{player1-time}", Main.getLeaderboard().getString("leaderboard.1.Time")).replace("{player2-name}",Main.getLeaderboard().getString("leaderboard.2.PlayerName")).replace("{player2-time}", Main.getLeaderboard().getString("leaderboard.2.Time")).replace("{player3-name}",Main.getLeaderboard().getString("leaderboard.3.PlayerName")).replace("{player3-time}", Main.getLeaderboard().getString("leaderboard.3.Time"))));
+                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', Main.getMainConfig().getString("Messages.Commands.Top3").replace("{player1-name}",Main.getLeaderboard().getString("leaderboard.1.PlayerName")).replace("{player1-time}", "" + Float.parseFloat(Main.getLeaderboard().getString("leaderboard.1.Time"))/1000f).replace("{player2-name}",Main.getLeaderboard().getString("leaderboard.2.PlayerName")).replace("{player2-time}", "" + Float.parseFloat(Main.getLeaderboard().getString("leaderboard.2.Time"))/1000f).replace("{player3-name}",Main.getLeaderboard().getString("leaderboard.3.PlayerName")).replace("{player3-time}", "" + Float.parseFloat(Main.getLeaderboard().getString("leaderboard.3.Time"))/1000f)));
                     break;
                 case "setstart":
                     if (((Player) sender).hasPermission("hubparkour.admin")) {
