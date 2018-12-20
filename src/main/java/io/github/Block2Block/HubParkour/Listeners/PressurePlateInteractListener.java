@@ -109,7 +109,7 @@ public class PressurePlateInteractListener implements Listener {
                         checksVisited.put(e.getPlayer(), checksVisited.get(e.getPlayer()) + 1);
                         e.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&', Main.getMainConfig().getString("Messages.Parkour.Checkpoints.Reached")).replace("{checkpoint}", "" + i));
                         if (Main.getMainConfig().getBoolean("Settings.Rewards.Checkpoint-Reward.Enabled")) {
-                            Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), Main.getMainConfig().getString("Settings.Rewards.Checkpoint-Reward.Command"));
+                            Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), Main.getMainConfig().getString("Settings.Rewards.Checkpoint-Reward.Command").replace("{player-name}",e.getPlayer().getName()).replace("{player-uuid}",e.getPlayer().getUniqueId().toString()));
                         }
                     }
 
@@ -133,11 +133,11 @@ public class PressurePlateInteractListener implements Listener {
                     float finishTime = finishMili/1000f;
                     if (Main.getMainConfig().getBoolean("Settings.Rewards.Finish-Reward.Enabled")) {
                         if (!Main.getLeaderboard().isSet("times." + e.getPlayer().getUniqueId() + ".time")) {
-                            Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), Main.getMainConfig().getString("Settings.Rewards.Finish-Reward.First-Time-Command"));
+                            Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), Main.getMainConfig().getString("Settings.Rewards.Finish-Reward.First-Time-Command").replace("{player-name}",e.getPlayer().getName()).replace("{player-uuid}",e.getPlayer().getUniqueId().toString()));
                         }
                         if (!Main.getMainConfig().getBoolean("Settings.Rewards.Finish-Reward.First-Time-Only")) {
                             if (Main.getLeaderboard().isSet("times." + e.getPlayer().getUniqueId() + ".time")) {
-                                Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), Main.getMainConfig().getString("Settings.Rewards.Finish-Reward.After-Completed-Command"));
+                                Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), Main.getMainConfig().getString("Settings.Rewards.Finish-Reward.After-Completed-Command").replace("{player-name}",e.getPlayer().getName()).replace("{player-uuid}",e.getPlayer().getUniqueId().toString()));
                             }
                         }
                     }

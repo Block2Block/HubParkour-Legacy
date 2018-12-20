@@ -101,12 +101,13 @@ Settings:
     Must-Complete-All-Checkpoints: true
     Join-Message: true
     Version-Checker: true
+    #Rewards commands, placeholders: {player-name} for the player's name, {player-uuid} for the player's UUID.
     Rewards:
         Checkpoint-Reward:
             Enabled: true
-            Command: "money give {username} 100"
+            Command: "money give {player-name} 100"
         Finish-Reward:
             Enabled: true
             First-Time-Only: false
-            First-Time-Command: "money give {username} 1000"
-            After-Completed-Command: "money give {username} 100"
+            First-Time-Command: "money give {player-name} 1000"
+            After-Completed-Command: "money give {player-name} 100"

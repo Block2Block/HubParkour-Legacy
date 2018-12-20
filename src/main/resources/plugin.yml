@@ -1,6 +1,6 @@
 name: HubParkour
 main: io.github.Block2Block.HubParkour.Main
-version: 1.2
+version: 1.2.1
 author: Block2Block
 website: http://forums.raptorpvp.net/
 softdepend: [HolographicDisplays]
