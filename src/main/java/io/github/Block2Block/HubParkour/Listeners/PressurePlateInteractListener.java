@@ -126,6 +126,7 @@ public class PressurePlateInteractListener implements Listener {
                                 e.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&',Main.getMainConfig().getString("Messages.Parkour.End.Failed.Not-Enough-Checkpoints")));
                                 PressurePlateInteractListener.removeParkourPTimes(e.getPlayer());
                                 checksVisited.remove(e.getPlayer());
+                                return;
                             }
                         }
                     }
