@@ -27,13 +27,30 @@ public class PressurePlateInteractListener implements Listener {
     private static Map<Player, Integer> checksVisited = new HashMap<>();
 
     private Location reset;
-    private List<Location> checkpoints = new ArrayList<>();
+    private static HashMap<Integer, Location> checkpoints = new HashMap<>();
     private static Location start;
     private static Location end;
+    private static Location restart;
 
-    /*
-    Gold = Checkpoint, Iron = Finish, Wooden = Start
-     */
+    private static Material startType;
+    private static Material endType;
+    private static Material checkType;
+
+    public static void setStartType(Material type) { startType = type; }
+    public static void setEndType(Material type) { endType = type; }
+    public static void setCheckType(Material type) { checkType = type; }
+
+    public static Material getCheckType() {
+        return checkType;
+    }
+
+    public static Material getEndType() {
+        return endType;
+    }
+
+    public static Material getStartType() {
+        return startType;
+    }
 
     public static Map<Player, Integer> getParkourChecks() { return parkourChecks; }
 
@@ -68,17 +85,31 @@ public class PressurePlateInteractListener implements Listener {
     public static void setEnd(Location l) {
         end = l;
     }
+    public static void setCheck(int number, Location location) {
+        if (checkpoints.containsKey(number)) {
+            checkpoints.remove(number);
+        }
+        checkpoints.put(number, location);
+    }
+    public static void setRestart(Location l) {restart = l;}
+
+    public static Location getStart() {return start;}
+    public static Location getEnd() {return end;}
+    public static Location getCheck(int number) {return checkpoints.get(number);}
+    public static Location getRestart() {return restart;}
 
     public static List<Location> getCheckLocations() {
         return checkLocations;
     }
+
+    //TODO: Go over listener, add in support for MySQL
 
     @EventHandler
     public void onPressurePlate(PlayerMoveEvent e) {
         if (e.getFrom().getBlock().getType().equals(e.getTo().getBlock().getType())) {
             return;
         }
-        if (e.getPlayer().getLocation().getBlock().getType().equals(Material.WOOD_PLATE)) {
+        if (e.getPlayer().getLocation().getBlock().getType().equals(startType)) {
             if (e.getPlayer().getLocation().getBlock().getLocation().equals(start)) {
                 if (parkourPlayers.contains(e.getPlayer())) {
                     e.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&',Main.getMainConfig().getString("Messages.Parkour.Restarted")));
@@ -98,7 +129,7 @@ public class PressurePlateInteractListener implements Listener {
                     e.getPlayer().setFlying(false);
                 }
             }
-        } else if (e.getPlayer().getLocation().getBlock().getType().equals(Material.GOLD_PLATE)) {
+        } else if (e.getPlayer().getLocation().getBlock().getType().equals(checkType)) {
             Location l = e.getPlayer().getLocation().getBlock().getLocation();
             if (checkLocations.contains(l)) {
                 if (parkourPlayers.contains(e.getPlayer())) {
@@ -117,7 +148,7 @@ public class PressurePlateInteractListener implements Listener {
                     e.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&', Main.getMainConfig().getString("Messages.Parkour.Checkpoints.Not-Started")));
                 }
             }
-        } else if (e.getPlayer().getLocation().getBlock().getType().equals(Material.IRON_PLATE)) {
+        } else if (e.getPlayer().getLocation().getBlock().getType().equals(endType)) {
             if (e.getPlayer().getLocation().getBlock().getLocation().equals(end)) {
                 if (parkourPlayers.contains(e.getPlayer())) {
                     if (Main.getMainConfig().getBoolean("Settings.Must-Complete-All-Checkpoints")) {
@@ -125,6 +156,7 @@ public class PressurePlateInteractListener implements Listener {
                             if (PressurePlateInteractListener.removeParkourPlayersBoo(e.getPlayer())) {
                                 e.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&',Main.getMainConfig().getString("Messages.Parkour.End.Failed.Not-Enough-Checkpoints")));
                                 PressurePlateInteractListener.removeParkourPTimes(e.getPlayer());
+                                PressurePlateInteractListener.removeParkourPlayers(e.getPlayer());
                                 checksVisited.remove(e.getPlayer());
                                 return;
                             }

@@ -9,7 +9,9 @@
 #
 # Do not remove any of the different values. They cannot be disabled, however
 # I may introduce a system for them to be disabled in the near future if there
-# is enough demand.
+# is enough demand. If you do remove values, the plugin will just load them in
+# again with their default values. The same occurs when there is an invalid value
+# used.
 #
 # I have worked quite hard on the plugin to make it as configurable as possible. Please
 # rate it on the Spigot page! Every review helps!
@@ -21,7 +23,7 @@
 
 Messages:
     #This is the message that appears when someone joins the server. It can be toggled off in the settings.
-    Join-Message: "&2Parkour>> &7This server uses HubParkour by Block2Block, powered by the RaptorPvP Network."
+    Join-Message: "&2Parkour>> &7This server uses HubParkour by Block2Block."
 
     #All Hologram messages. Requires HolographicDisplays to be installed.
     Holograms:
@@ -32,7 +34,7 @@ Messages:
     #Command related messages. Default values are recommended, but they can all be changed. Server must be restarted for changes to apply.
     Commands:
         #The message that is displayed when a player includes no arguments with the /parkour command.
-        No-Arguments: "&2Parkour>> &7Parkour Help:\n&a/parkour reset &7- Sends you back to the start.\n&a/parkour checkpoint &7- Teleports you to the last checkpoint you reached."
+        No-Arguments: "&2Parkour>> &7Parkour Help:\n&a/parkour reset &7- Sends you back to the start.\n&a/parkour checkpoint &7- Teleports you to the last checkpoint you reached.\n&a/parkour leave &7- Makes you leave the parkour."
 
         #The message that is displayed when a player types in a sub-command that doesn't exist.
         Unknown-Subcommand: "&2Parkour>> &7That sub-command is unknown!"
@@ -53,10 +55,15 @@ Messages:
         #The message format for when a player looks at the top 3 leaderboard.
         Top3: "&2Parkour>> &7The top 3 times are:\n&a#1 &7- &a{player1-name} &7- &a{player1-time} &7seconds.\n&a#2 &7- &a{player2-name} &7- &a{player2-time} &7seconds.\n&a#3 &7- &a{player3-name} &7- &a{player3-time} &7seconds."
 
+        #Messages sent when the user uses /parkour leave.
+        Leave:
+            Left: "&2Parkour>> &7You have left the parkour and your time has been reset."
+            Not-In-Parkour: "&2Parkour>> &7You must have started the parkour in order to leave it."
+
         #Admin command messages.
         Admin:
             Reload:
-                Successful: "&2Parkour>> &7Reload successful!"
+                Successful: "&2Parkour>> &7Reload successful! If you have changed database or hologram settings, you will need to restart the server in order for those changes to apply."
                 Failed: "&2Parkour>> &7The reload failed. Please make sure that you have formatted the file correctly."
             SetStart:
                 Successful: "&2Parkour>> &7You have successfully set the startpoint."
@@ -101,6 +108,39 @@ Settings:
     Must-Complete-All-Checkpoints: true
     Join-Message: true
     Version-Checker: true
+
+    #MySQL/SQLite settings. Adds support for cross server player times and leaderboards.
+    #Note: The pressure plates must be in exactly the same location (including the types) in all servers in order for this to work.
+    Database:
+        #If MySQL/SQLite is enabled, the plugin will no longer use file storage except for this config.
+        Enabled: false
+        Type: "SQLite"
+
+        #Details of the MySQL Database.
+        Details:
+            MySQL:
+                Hostname: "localhost"
+                Port: "3306"
+                Database: "HubParkour"
+                Username: "root"
+                Password: ""
+            SQLite:
+                #The file name MUST end in .db.
+                File-Name: "hp-storage.db"
+
+        #Names of the tables that will be created/used in the database.
+        Tables:
+            PlayerTimes: "hp_playertimes"
+            Locations: "hp_locations"
+
+    #Specifies the type of pressure plates that the plugin uses. Values CANNOT be the same. The plugin will disable itself
+    #if an invalid or duplicate value is detected. Modify with caution.
+    #Valid values: Gold, Iron, Wood, Stone.
+    Pressure-Plates:
+        Start: "Wood"
+        Checkpoint: "Gold"
+        End: "Iron"
+
     #Rewards commands, placeholders: {player-name} for the player's name, {player-uuid} for the player's UUID.
     Rewards:
         Checkpoint-Reward:
