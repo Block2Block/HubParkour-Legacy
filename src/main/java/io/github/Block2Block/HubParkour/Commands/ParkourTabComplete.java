@@ -14,7 +14,7 @@ public class ParkourTabComplete implements TabCompleter {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String s, String[] args) {
-        if (command.getName().equalsIgnoreCase("parkour") && args.length == 0) {
+        if (command.getName().equalsIgnoreCase("parkour") && args.length == 1) {
             if (sender instanceof Player) {
                 Player p = (Player) sender;
                 List<String> list = new ArrayList<>();

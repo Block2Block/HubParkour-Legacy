@@ -128,11 +128,6 @@ Settings:
                 #The file name MUST end in .db.
                 File-Name: "hp-storage.db"
 
-        #Names of the tables that will be created/used in the database.
-        Tables:
-            PlayerTimes: "hp_playertimes"
-            Locations: "hp_locations"
-
     #Specifies the type of pressure plates that the plugin uses. Values CANNOT be the same. The plugin will disable itself
     #if an invalid or duplicate value is detected. Modify with caution.
     #Valid values: Gold, Iron, Wood, Stone.

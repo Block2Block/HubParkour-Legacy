@@ -62,8 +62,6 @@ public class ConfigParser {
         if(!Main.getMainConfig().contains("Settings.Database.Details.MySQL.Username")) Main.getMainConfig().set("Settings.Database.Details.MySQL.Username", "root");
         if(!Main.getMainConfig().contains("Settings.Database.Details.MySQL.Password")) Main.getMainConfig().set("Settings.Database.Details.MySQL.Password", "");
         if(!Main.getMainConfig().contains("Settings.Database.SQLite.File-Name")) Main.getMainConfig().set("Settings.Database.SQLite.File-Name", "hp-storage.db");
-        if(!Main.getMainConfig().contains("Settings.Database.Tables.PlayerTimes")) Main.getMainConfig().set("Settings.Database.Tables.PlayerTimes", "hp_playertimes");
-        if(!Main.getMainConfig().contains("Settings.Database.Tables.Locations")) Main.getMainConfig().set("Settings.Database.Tables.Locations", "hp_locations");
         if(!Main.getMainConfig().contains("Settings.Pressure-Plates.Start")) Main.getMainConfig().set("Settings.Pressure-Plates.Start", "Wood");
         if(!Main.getMainConfig().contains("Settings.Pressure-Plates.End")) Main.getMainConfig().set("Settings.Pressure-Plates.End", "Iron");
         if(!Main.getMainConfig().contains("Settings.Pressure-Plates.Checkpoint")) Main.getMainConfig().set("Settings.Pressure-Plates.Checkpoints", "Gold");
@@ -134,8 +132,6 @@ public class ConfigParser {
         if(!Main.getMainConfig().isString("Settings.Database.Details.MySQL.Username")) Main.addConfig("Settings.Database.Details.MySQL.Username", "root");
         if(!Main.getMainConfig().isString("Settings.Database.Details.MySQL.Password")) Main.addConfig("Settings.Database.Details.MySQL.Password", "");
         if(!Main.getMainConfig().isString("Settings.Database.SQLite.File-Name")) Main.addConfig("Settings.Database.SQLite.File-Name", "hp-storage.db");
-        if(!Main.getMainConfig().isString("Settings.Database.Tables.PlayerTimes")) Main.addConfig("Settings.Database.Tables.PlayerTimes", "hp_playertimes");
-        if(!Main.getMainConfig().isString("Settings.Database.Tables.Locations")) Main.addConfig("Settings.Database.Tables.Locations", "hp_locations");
         if(!Main.getMainConfig().isString("Settings.Pressure-Plates.Start")) Main.addConfig("Settings.Pressure-Plates.Start", "Wood");
         if(!Main.getMainConfig().isString("Settings.Pressure-Plates.End")) Main.addConfig("Settings.Pressure-Plates.End", "Iron");
         if(!Main.getMainConfig().isString("Settings.Pressure-Plates.Checkpoint")) Main.addConfig("Settings.Pressure-Plates.Checkpoints", "Gold");

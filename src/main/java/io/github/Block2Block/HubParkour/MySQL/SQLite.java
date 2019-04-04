@@ -1,5 +1,6 @@
 package io.github.Block2Block.HubParkour.MySQL;
 
+import io.github.Block2Block.HubParkour.Main;
 import org.bukkit.Bukkit;
 
 import java.io.File;
@@ -41,8 +42,10 @@ public class SQLite extends Database {
         if (!(file.exists())) {
             try {
                 file.createNewFile();
+                Main.get().getLogger().info("Database file " + dbLocation + " successfully created!");
             } catch (IOException e) {
-                System.out.println("Unable to create database!");
+                Main.get().getLogger().info("Unable to create database. Stack Trace:");
+                e.printStackTrace();
             }
         }
         Class.forName("org.sqlite.JDBC");

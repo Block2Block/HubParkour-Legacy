@@ -23,6 +23,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
 
 public class Main extends JavaPlugin {
 
@@ -51,90 +52,90 @@ public class Main extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        instance = this;
         useHolographicDisplays = Bukkit.getPluginManager().isPluginEnabled("HolographicDisplays");
         loadConfigs();
         registerListeners(new LeaveListener(), new PlayerToggleFlyListener(), new PressurePlateInteractListener(), new JoinListener());
         getCommand("parkour").setExecutor(new CommandParkour());
         getCommand("parkour").setTabCompleter(new ParkourTabComplete());
-        getLogger().info("HubParkour has been successfully enabled.");
+        if (getMainConfig().getBoolean("Settings.Database.Enabled")) {
+            dbEnabled = true;
+            if (getMainConfig().getString("Settings.Database.Type").equalsIgnoreCase("mysql")) {
+                db = new DatabaseManager();
+                try {
+                    db.setup(true);
+                    getLogger().info("MySQL Database connection initialised.");
+                } catch (Exception e) {
+                    getLogger().log(Level.SEVERE, "Unable to set up connection to the database. File storage was selected as a failsafe. Stack Trace:");
+                    e.printStackTrace();
+                    dbEnabled = false;
+                }
+            } else if (!getMainConfig().getString("Settings.Database.Type").equalsIgnoreCase("sqlite")) {
+                dbEnabled = false;
+                getLogger().info("There is an issue in the config.yml file. Please ensure that you have selected the right type of Database selected. File storage was selected as a failsafe.");
+                if (getStorage().isSet("spawn.location")&&getStorage().isSet("end.location")&&getStorage().isSet("reset.location")) {
+                    generateHolograms(false);
+                } else {
+                    getLogger().info("The parkour has not been setup yet, the Holograms have not been generated.");
+                }
+            } else {
+                db = new DatabaseManager();
+                try {
+                    db.setup(false);
+                    getLogger().info("SQLite Database connection initialised.");
+                } catch (Exception e) {
+                    getLogger().log(Level.SEVERE, "Unable to set up connection to the database. File storage was selected as a failsafe. Stack Trace:");
+                    e.printStackTrace();
+                    dbEnabled = false;
+                }
+            }
+        }
         if (!useHolographicDisplays) {
             getLogger().info("HolographicDisplays not found.");
         } else {
             getLogger().info("HolographicDisplays has been detected.");
             if (getMainConfig().getBoolean("Settings.Holograms")) {
-                if (getMainConfig().getBoolean("Settings.Database.Enabled")) {
-                    dbEnabled = true;
-                    if (getMainConfig().getString("Settings.Database.Type").equalsIgnoreCase("mysql")) {
-                        db = new DatabaseManager(true);
-                        List<List<String>> locations = db.getLocations();
-                        boolean start = false;
-                        boolean end = false;
-                        boolean reset = false;
-                        for (List<String> x : locations) {
-                            switch (Integer.parseInt(x.get(0))) {
-                                case 0:
-                                    start = true;
-                                    break;
-                                case 1:
-                                    end = true;
-                                    break;
-                                case 2:
-                                    reset = true;
-                                    break;
-                                case 3:
-                                    continue;
-                            }
-                        }
-                        if (start && end && reset) {
-                            generateHolograms(true);
-                        } else {
-                            getLogger().info("The parkour has not been setup yet, the Holograms have not been generated.");
-                        }
-                    } else if (!getMainConfig().getString("Settings.Database.Type").equalsIgnoreCase("sqlite")) {
-                        dbEnabled = false;
-                        getLogger().info("There is an issue in the config.yml file. Please ensure that you have selected the right type of Database selected. File storage was selected as a failsafe.");
-                        if (getStorage().isSet("spawn.location")&&getStorage().isSet("end.location")&&getStorage().isSet("reset.location")) {
-                            generateHolograms(false);
-                        } else {
-                            getLogger().info("The parkour has not been setup yet, the Holograms have not been generated.");
-                        }
-                    } else {
-                        db = new DatabaseManager(false);
-                        List<List<String>> locations = db.getLocations();
-                        boolean start = false;
-                        boolean end = false;
-                        boolean reset = false;
-                        for (List<String> x : locations) {
-                            switch (Integer.parseInt(x.get(0))) {
-                                case 0:
-                                    start = true;
-                                    break;
-                                case 1:
-                                    end = true;
-                                    break;
-                                case 2:
-                                    reset = true;
-                                    break;
-                                case 3:
-                                    continue;
-                            }
-                        }
-                        if (start && end && reset) {
-                            generateHolograms(true);
-                        } else {
-                            getLogger().info("The parkour has not been setup yet, the Holograms have not been generated.");
+                if (dbEnabled) {
+                    getLogger().info("Finding locations...");
+                    List<List<String>> locations = db.getLocations();
+                    boolean start = false;
+                    boolean end = false;
+                    boolean reset = false;
+                    for (List<String> x : locations) {
+                        switch (Integer.parseInt(x.get(0))) {
+                            case 0:
+                                start = true;
+                                getLogger().info("Start position found.");
+                                break;
+                            case 1:
+                                end = true;
+                                getLogger().info("End position found.");
+                                break;
+                            case 2:
+                                reset = true;
+                                getLogger().info("Restart position found.");
+                                break;
+                            case 3:
+                                continue;
                         }
                     }
+                    if (start && end && reset) {
+                        getLogger().info("All positions found. Generating holograms...");
+                        generateHolograms(true);
+                    } else {
+                        getLogger().info("The parkour has not been setup yet, the Holograms have not been generated.");
+                    }
                 } else {
-                    if (getStorage().isSet("spawn.location")&&getStorage().isSet("end.location")&&getStorage().isSet("reset.location")) {
+                    if (getStorage().isSet("spawn.location") && getStorage().isSet("end.location") && getStorage().isSet("reset.location")) {
                         generateHolograms(false);
                     } else {
                         getLogger().info("The parkour has not been setup yet, the Holograms have not been generated.");
                     }
                 }
-
             }
         }
+
+
         for (String s : getStorage().getKeys(false)) {
             if (s.equalsIgnoreCase("spawn")) {
                 Location l = (Location) getStorage().get("spawn.location");
@@ -151,6 +152,7 @@ public class Main extends JavaPlugin {
                 }
             }
         }
+        getLogger().info("HubParkour has been successfully enabled.");
         if (getMainConfig().getBoolean("Settings.Version-Checker")) {
             String version = newVersionCheck();
             if (!version.equals(null)) {
@@ -215,7 +217,7 @@ public class Main extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        saveYamls();
+        db.closeConnection();
         getLogger().info("HubParkour has successfully been disabled.");
     }
 
@@ -320,6 +322,9 @@ public class Main extends JavaPlugin {
                 getLogger().info("Invalid pressure plate type detected in the config file. The setting has been reset.");
                 break;
         }
+        ConfigParser c = new ConfigParser();
+        c.parseExist();
+        c.parseType();
     }
 
     public static FileConfiguration getMainConfig() {
@@ -339,8 +344,11 @@ public class Main extends JavaPlugin {
     public static void loadYamls() {
         try {
             config.load(configFile);
+            config.options().copyHeader(true);
             storage.load(storageFile);
+            storage.options().copyHeader(true);
             leaderboard.load(leaderboardFile);
+            leaderboard.options().copyHeader(true);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -348,9 +356,7 @@ public class Main extends JavaPlugin {
 
     public static void reloadYamls() {
         try {
-            config.load(configFile);
-            storage.load(storageFile);
-            leaderboard.load(leaderboardFile);
+            loadYamls();
         } catch (Exception e) {
             e.printStackTrace();
         }
