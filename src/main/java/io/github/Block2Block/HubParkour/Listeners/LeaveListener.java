@@ -10,6 +10,7 @@ public class LeaveListener implements Listener {
     public void onLeave(PlayerQuitEvent e) {
         PressurePlateInteractListener.removeParkourPlayers(e.getPlayer());
         PressurePlateInteractListener.removeParkourPTimes(e.getPlayer());
+        PressurePlateInteractListener.removeChecksVisited(e.getPlayer());
     }
 
 }
