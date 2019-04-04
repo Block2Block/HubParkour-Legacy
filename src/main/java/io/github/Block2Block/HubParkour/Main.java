@@ -431,7 +431,7 @@ public class Main extends JavaPlugin {
                 switch (Integer.parseInt(x.get(0))) {
                     case 0:
                         World world = Bukkit.getWorld(x.get(5));
-                        if (world.equals(null)) {
+                        if (world == null) {
                             getLogger().info("One of the worlds you created the parkour in does not exist. Please reset your start position.");
                             return;
                         }
@@ -449,7 +449,7 @@ public class Main extends JavaPlugin {
                         break;
                     case 1:
                         World world1 = Bukkit.getWorld(x.get(5));
-                        if (world1.equals(null)) {
+                        if (world1 == null) {
                             getLogger().info("One of the worlds you created the parkour in does not exist. Please reset your end position.");
                             return;
                         }
@@ -467,7 +467,7 @@ public class Main extends JavaPlugin {
                         break;
                     case 2:
                         World world2 = Bukkit.getWorld(x.get(5));
-                        if (world2.equals(null)) {
+                        if (world2 == null) {
                             getLogger().info("One of the worlds you created the parkour in does not exist. Please reset your end position.");
                             return;
                         }
@@ -478,7 +478,7 @@ public class Main extends JavaPlugin {
                     case 3:
 
                         World world3 = Bukkit.getWorld(x.get(5));
-                        if (world3.equals(null)) {
+                        if (world3 == null) {
                             getLogger().info("One of the worlds you created the parkour in does not exist. Please reset your checkpoints.");
                             return;
                         }

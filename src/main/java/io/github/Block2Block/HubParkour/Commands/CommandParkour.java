@@ -14,6 +14,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -23,7 +24,6 @@ public class CommandParkour implements CommandExecutor {
 
     private Main m = Main.get();
 
-    //TODO: Go over commands with aim of adding in MySQL support.
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
@@ -49,6 +49,8 @@ public class CommandParkour implements CommandExecutor {
                             ((Player) sender).teleport(l);
                         } else {
                             Location l = getCheck(getParkourChecks().get((Player) sender));
+                            l.setX(l.getX() + 0.5);
+                            l.setZ(l.getZ() + 0.5);
                             ((Player) sender).teleport(l);
                         }
                         sender.sendMessage(ChatColor.translateAlternateColorCodes('&', Main.getMainConfig().getString("Messages.Commands.Checkpoint.Successful")));
@@ -60,9 +62,25 @@ public class CommandParkour implements CommandExecutor {
                 case "leaderboard":
                     if (Main.dbEnabled) {
                         HashMap<Integer, List<String>> leaderboard = Main.db.getLeaderboard();
-                        List<String> pos1 = leaderboard.get(1);
-                        List<String> pos2 = leaderboard.get(2);
-                        List<String> pos3 = leaderboard.get(3);
+                        List<String> pos1 = new ArrayList<>();
+                        pos1.add("N/A");
+                        pos1.add("0");
+                        List<String> pos2 = new ArrayList<>();
+                        pos2.add("N/A");
+                        pos2.add("0");
+                        List<String> pos3 = new ArrayList<>();
+                        pos3.add("N/A");
+                        pos3.add("0");
+                        switch (leaderboard.size()) {
+                            case 3:
+                                pos3 = leaderboard.get(3);
+                            case 2:
+                                pos2 = leaderboard.get(2);
+                            case 1:
+                                pos1 = leaderboard.get(1);
+                                break;
+                        }
+
                         sender.sendMessage(ChatColor.translateAlternateColorCodes('&', Main.getMainConfig().getString("Messages.Commands.Top3").replace("{player1-name}",pos1.get(0)).replace("{player1-time}", "" + Float.parseFloat(pos1.get(1))/1000f).replace("{player2-name}",pos2.get(0)).replace("{player2-time}", "" + Float.parseFloat(pos2.get(1))/1000f).replace("{player3-name}",pos3.get(0)).replace("{player3-time}", "" + Float.parseFloat(pos3.get(1))/1000f)));
                     } else {
                         sender.sendMessage(ChatColor.translateAlternateColorCodes('&', Main.getMainConfig().getString("Messages.Commands.Top3").replace("{player1-name}", Main.getLeaderboard().getString("leaderboard.1.PlayerName")).replace("{player1-time}", "" + Float.parseFloat(Main.getLeaderboard().getString("leaderboard.1.Time")) / 1000f).replace("{player2-name}", Main.getLeaderboard().getString("leaderboard.2.PlayerName")).replace("{player2-time}", "" + Float.parseFloat(Main.getLeaderboard().getString("leaderboard.2.Time")) / 1000f).replace("{player3-name}", Main.getLeaderboard().getString("leaderboard.3.PlayerName")).replace("{player3-time}", "" + Float.parseFloat(Main.getLeaderboard().getString("leaderboard.3.Time")) / 1000f)));
@@ -72,7 +90,7 @@ public class CommandParkour implements CommandExecutor {
                     if (((Player) sender).hasPermission("hubparkour.admin")) {
                         if (((Player) sender).getLocation().getBlock().getType().equals(PressurePlateInteractListener.getStartType())) {
                             if (Main.dbEnabled) {
-                                if (PressurePlateInteractListener.getStart().equals(null)) {
+                                if (PressurePlateInteractListener.getStart() == null) {
                                     Main.db.addLocation(((Player) sender).getLocation().getBlock().getLocation(), 0, -1);
                                 } else {
                                     Main.db.setLocation(((Player) sender).getLocation().getBlock().getLocation(), 0, -1);
@@ -109,7 +127,7 @@ public class CommandParkour implements CommandExecutor {
                     if (((Player) sender).hasPermission("hubparkour.admin")) {
                         if (((Player) sender).getLocation().getBlock().getType().equals(PressurePlateInteractListener.getEndType())) {
                             if (Main.dbEnabled) {
-                                if (PressurePlateInteractListener.getEnd().equals(null)) {
+                                if (PressurePlateInteractListener.getEnd() == null) {
                                     Main.db.addLocation(((Player) sender).getLocation().getBlock().getLocation(), 1, -1);
                                 } else {
                                     Main.db.setLocation(((Player) sender).getLocation().getBlock().getLocation(), 1, -1);
@@ -144,7 +162,7 @@ public class CommandParkour implements CommandExecutor {
                     if (((Player) sender).hasPermission("hubparkour.admin")) {
                         Location l = ((Player) sender).getLocation();
                         if (Main.dbEnabled) {
-                            if (PressurePlateInteractListener.getRestart().equals(null)) {
+                            if (PressurePlateInteractListener.getRestart() == null) {
                                 Main.db.addLocation(l, 2, -1);
                             } else {
                                 Main.db.setLocation(l, 2, -1);
@@ -160,7 +178,7 @@ public class CommandParkour implements CommandExecutor {
                     break;
                 case "setcheck":
                     if (((Player) sender).hasPermission("hubparkour.admin")) {
-                        if (((Player) sender).getLocation().getBlock().getType().equals(Material.GOLD_PLATE)) {
+                        if (((Player) sender).getLocation().getBlock().getType().equals(PressurePlateInteractListener.getCheckType())) {
                             try {
                                 int i = Integer.parseInt(args[1]);
                             } catch(NumberFormatException e) {
@@ -171,10 +189,10 @@ public class CommandParkour implements CommandExecutor {
                                 return true;
                             }
                             if (Main.dbEnabled) {
-                                if (!PressurePlateInteractListener.getCheck(Integer.parseInt(args[1])).equals(null)) {
-                                    Main.db.addLocation(((Player) sender).getLocation().getBlock().getLocation(), 3, Integer.parseInt(args[1]));
-                                } else {
+                                if (PressurePlateInteractListener.getCheck(Integer.parseInt(args[1])) != null) {
                                     Main.db.setLocation(((Player) sender).getLocation().getBlock().getLocation(), 3, Integer.parseInt(args[1]));
+                                } else {
+                                    Main.db.addLocation(((Player) sender).getLocation().getBlock().getLocation(), 3, Integer.parseInt(args[1]));
                                 }
                             } else {
                                 Main.addStorage(args[1] + ".location", ((Player) sender).getLocation().getBlock().getLocation());
@@ -224,7 +242,7 @@ public class CommandParkour implements CommandExecutor {
                         removeChecksVisited((Player) sender);
                         sender.sendMessage(ChatColor.translateAlternateColorCodes('&',Main.getMainConfig().getString("Messages.Commands.Leave.Left")));
                     } else {
-                        sender.sendMessage(ChatColor.translateAlternateColorCodes('&',Main.getMainConfig().getString("Messages.Commands.Leave.NotInParkour")));
+                        sender.sendMessage(ChatColor.translateAlternateColorCodes('&',Main.getMainConfig().getString("Messages.Commands.Leave.Not-In-Parkour")));
                     }
                     break;
                 default:

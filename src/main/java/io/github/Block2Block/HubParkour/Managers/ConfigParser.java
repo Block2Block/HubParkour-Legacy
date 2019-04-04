@@ -61,7 +61,7 @@ public class ConfigParser {
         if(!Main.getMainConfig().contains("Settings.Database.Details.MySQL.Database")) Main.getMainConfig().set("Settings.Database.Details.MySQL.Database", "HubParkour");
         if(!Main.getMainConfig().contains("Settings.Database.Details.MySQL.Username")) Main.getMainConfig().set("Settings.Database.Details.MySQL.Username", "root");
         if(!Main.getMainConfig().contains("Settings.Database.Details.MySQL.Password")) Main.getMainConfig().set("Settings.Database.Details.MySQL.Password", "");
-        if(!Main.getMainConfig().contains("Settings.Database.SQLite.File-Name")) Main.getMainConfig().set("Settings.Database.SQLite.File-Name", "hp-storage.db");
+        if(!Main.getMainConfig().contains("Settings.Database.Details.SQLite.File-Name")) Main.getMainConfig().set("Settings.Database.Details.SQLite.File-Name", "hp-storage.db");
         if(!Main.getMainConfig().contains("Settings.Pressure-Plates.Start")) Main.getMainConfig().set("Settings.Pressure-Plates.Start", "Wood");
         if(!Main.getMainConfig().contains("Settings.Pressure-Plates.End")) Main.getMainConfig().set("Settings.Pressure-Plates.End", "Iron");
         if(!Main.getMainConfig().contains("Settings.Pressure-Plates.Checkpoint")) Main.getMainConfig().set("Settings.Pressure-Plates.Checkpoints", "Gold");
@@ -131,7 +131,7 @@ public class ConfigParser {
         if(!Main.getMainConfig().isString("Settings.Database.Details.MySQL.Database")) Main.addConfig("Settings.Database.Details.MySQL.Database", "HubParkour");
         if(!Main.getMainConfig().isString("Settings.Database.Details.MySQL.Username")) Main.addConfig("Settings.Database.Details.MySQL.Username", "root");
         if(!Main.getMainConfig().isString("Settings.Database.Details.MySQL.Password")) Main.addConfig("Settings.Database.Details.MySQL.Password", "");
-        if(!Main.getMainConfig().isString("Settings.Database.SQLite.File-Name")) Main.addConfig("Settings.Database.SQLite.File-Name", "hp-storage.db");
+        if(!Main.getMainConfig().isString("Settings.Database.Details.SQLite.File-Name")) Main.addConfig("Settings.Database.Details.SQLite.File-Name", "hp-storage.db");
         if(!Main.getMainConfig().isString("Settings.Pressure-Plates.Start")) Main.addConfig("Settings.Pressure-Plates.Start", "Wood");
         if(!Main.getMainConfig().isString("Settings.Pressure-Plates.End")) Main.addConfig("Settings.Pressure-Plates.End", "Iron");
         if(!Main.getMainConfig().isString("Settings.Pressure-Plates.Checkpoint")) Main.addConfig("Settings.Pressure-Plates.Checkpoints", "Gold");
@@ -143,10 +143,7 @@ public class ConfigParser {
         if(!Main.getMainConfig().isString("Settings.Rewards.Finish-Reward.After-Completed-Command")) Main.addConfig("Settings.Rewards.Finish-Reward.After-Completed-Command", "money give {player-name} 100");
 
         //Checking values are not blank.
-        if(!Main.getMainConfig().getString("Settings.Database.SQLite.File-Name").equalsIgnoreCase("")) Main.addConfig("Settings.Database.SQLite.File-Name", "hp-storage.db");
-        if(!Main.getMainConfig().getString("Settings.Database.Tables.PlayerTimes").equalsIgnoreCase("")) Main.addConfig("Settings.Database.Tables.PlayerTimes", "hp_playertimes");
-        if(!Main.getMainConfig().getString("Settings.Database.Tables.Locations").equals("")) Main.addConfig("Settings.Database.Tables.Locations", "hp_locations");
-
+        if(!Main.getMainConfig().getString("Settings.Database.Details.SQLite.File-Name").equalsIgnoreCase("")) Main.addConfig("Settings.Database.Details.SQLite.File-Name", "hp-storage.db");
         return true;
     }
 

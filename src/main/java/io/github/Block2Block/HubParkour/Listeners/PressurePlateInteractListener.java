@@ -10,10 +10,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class PressurePlateInteractListener implements Listener {
 
@@ -26,7 +23,6 @@ public class PressurePlateInteractListener implements Listener {
     private static Map<Player, Integer> parkourChecks = new HashMap<>();
     private static Map<Player, Integer> checksVisited = new HashMap<>();
 
-    private Location reset;
     private static HashMap<Integer, Location> checkpoints = new HashMap<>();
     private static Location start;
     private static Location end;
@@ -102,8 +98,6 @@ public class PressurePlateInteractListener implements Listener {
         return checkLocations;
     }
 
-    //TODO: Go over listener, add in support for MySQL
-
     @EventHandler
     public void onPressurePlate(PlayerMoveEvent e) {
         if (e.getFrom().getBlock().getType().equals(e.getTo().getBlock().getType())) {
@@ -111,6 +105,9 @@ public class PressurePlateInteractListener implements Listener {
         }
         if (e.getPlayer().getLocation().getBlock().getType().equals(startType)) {
             if (e.getPlayer().getLocation().getBlock().getLocation().equals(start)) {
+                if (start == null || end == null || restart == null) {
+                    return;
+                }
                 if (parkourPlayers.contains(e.getPlayer())) {
                     e.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&',Main.getMainConfig().getString("Messages.Parkour.Restarted")));
                     parkourTimes.remove(e.getPlayer());
@@ -132,6 +129,9 @@ public class PressurePlateInteractListener implements Listener {
         } else if (e.getPlayer().getLocation().getBlock().getType().equals(checkType)) {
             Location l = e.getPlayer().getLocation().getBlock().getLocation();
             if (checkLocations.contains(l)) {
+                if (start == null || end == null || restart == null) {
+                    return;
+                }
                 if (parkourPlayers.contains(e.getPlayer())) {
                     int i = checkLocations.indexOf(l) + 1;
                     if (i > parkourChecks.get(e.getPlayer())) {
@@ -150,6 +150,9 @@ public class PressurePlateInteractListener implements Listener {
             }
         } else if (e.getPlayer().getLocation().getBlock().getType().equals(endType)) {
             if (e.getPlayer().getLocation().getBlock().getLocation().equals(end)) {
+                if (start == null || end == null || restart == null) {
+                    return;
+                }
                 if (parkourPlayers.contains(e.getPlayer())) {
                     if (Main.getMainConfig().getBoolean("Settings.Must-Complete-All-Checkpoints")) {
                         if (checksVisited.get(e.getPlayer()) != checkLocations.size()) {
@@ -164,112 +167,175 @@ public class PressurePlateInteractListener implements Listener {
                     }
                     long finishMili = (System.currentTimeMillis() - parkourTimes.get(e.getPlayer()));
                     float finishTime = finishMili/1000f;
+                    boolean beatBefore;
+                    boolean beatRecord;
+                    if (Main.dbEnabled) {
+                        beatBefore = Main.db.beatBefore(e.getPlayer());
+                        beatRecord = Main.db.beatOldRecord(e.getPlayer(), finishMili);
+                    } else {
+                        beatBefore = Main.getLeaderboard().isSet("times." + e.getPlayer().getUniqueId() + ".time");
+                        beatRecord = false;
+                    }
                     if (Main.getMainConfig().getBoolean("Settings.Rewards.Finish-Reward.Enabled")) {
-                        if (!Main.getLeaderboard().isSet("times." + e.getPlayer().getUniqueId() + ".time")) {
-                            Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), Main.getMainConfig().getString("Settings.Rewards.Finish-Reward.First-Time-Command").replace("{player-name}",e.getPlayer().getName()).replace("{player-uuid}",e.getPlayer().getUniqueId().toString()));
-                        }
-                        if (!Main.getMainConfig().getBoolean("Settings.Rewards.Finish-Reward.First-Time-Only")) {
-                            if (Main.getLeaderboard().isSet("times." + e.getPlayer().getUniqueId() + ".time")) {
-                                Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), Main.getMainConfig().getString("Settings.Rewards.Finish-Reward.After-Completed-Command").replace("{player-name}",e.getPlayer().getName()).replace("{player-uuid}",e.getPlayer().getUniqueId().toString()));
+                        if (Main.dbEnabled) {
+                            if (!beatBefore) {
+                                Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), Main.getMainConfig().getString("Settings.Rewards.Finish-Reward.First-Time-Command").replace("{player-name}",e.getPlayer().getName()).replace("{player-uuid}",e.getPlayer().getUniqueId().toString()));
+                            } else {
+                                if (!Main.getMainConfig().getBoolean("Settings.Rewards.Finish-Reward.First-Time-Only")) {
+                                    Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), Main.getMainConfig().getString("Settings.Rewards.Finish-Reward.After-Completed-Command").replace("{player-name}",e.getPlayer().getName()).replace("{player-uuid}",e.getPlayer().getUniqueId().toString()));
+                                }
+                            }
+                        } else {
+                            if (!beatBefore) {
+                                Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), Main.getMainConfig().getString("Settings.Rewards.Finish-Reward.First-Time-Command").replace("{player-name}",e.getPlayer().getName()).replace("{player-uuid}",e.getPlayer().getUniqueId().toString()));
+                            }
+                            if (!Main.getMainConfig().getBoolean("Settings.Rewards.Finish-Reward.First-Time-Only")) {
+                                if (beatBefore) {
+                                    Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), Main.getMainConfig().getString("Settings.Rewards.Finish-Reward.After-Completed-Command").replace("{player-name}",e.getPlayer().getName()).replace("{player-uuid}",e.getPlayer().getUniqueId().toString()));
+                                }
                             }
                         }
-                    }
-                    if (Main.getLeaderboard().isSet("times." + e.getPlayer().getUniqueId() + ".time")) {
-                        if (Main.getLeaderboard().getLong("times." + e.getPlayer().getUniqueId() + ".time") > finishMili) {
-                            e.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&',Main.getMainConfig().getString("Messages.Parkour.End.Beat-Previous-Personal-Best")).replace("{time}", "" + finishTime));
-                            Main.getLeaderboard().set("times." + e.getPlayer().getUniqueId() + ".time", finishMili);
-                            Main.saveYamls();
-                        } else {
-                            e.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&',Main.getMainConfig().getString("Messages.Parkour.End.Not-Beat-Previous-Personal-Best")).replace("{time}", "" + finishTime));
-                        }
-                    } else {
-                        e.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&',Main.getMainConfig().getString("Messages.Parkour.End.First-Time")).replace("{time}", "" + finishTime));
-                        Main.getLeaderboard().set("times." + e.getPlayer().getUniqueId() + ".time", (System.currentTimeMillis() - parkourTimes.get(e.getPlayer())));
-                        Main.saveYamls();
                     }
 
-                    if (Main.getLeaderboard().getLong("leaderboard.1.Time") > finishMili||e.getPlayer().getUniqueId().toString().equals(Main.getLeaderboard().get("leaderboard.1.UUID").toString())) {
-                        if (e.getPlayer().getUniqueId().toString().equals(Main.getLeaderboard().get("leaderboard.1.UUID").toString())) {
-                            if (Main.getLeaderboard().getLong("leaderboard.1.Time") > finishMili) {
-                                Main.getLeaderboard().set("leaderboard.1.Time", finishMili);
+                    if (Main.dbEnabled) {
+                        if (beatBefore) {
+                            if (beatRecord) {
+                                e.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&',Main.getMainConfig().getString("Messages.Parkour.End.Beat-Previous-Personal-Best")).replace("{time}", "" + finishTime));
+                            } else {
+                                e.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&',Main.getMainConfig().getString("Messages.Parkour.End.Not-Beat-Previous-Personal-Best")).replace("{time}", "" + finishTime));
                             }
-                            e.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&',Main.getMainConfig().getString("Messages.Parkour.Leaderboard.Still-First")));
-                            parkourChecks.remove(e.getPlayer());
-                            parkourTimes.remove(e.getPlayer());
-                            parkourPlayers.remove(e.getPlayer());
-                            return;
                         } else {
-                            if (!Main.getLeaderboard().get("leaderboard.2.UUID").toString().equals(e.getPlayer().getUniqueId().toString())) {
+                            e.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&',Main.getMainConfig().getString("Messages.Parkour.End.First-Time")).replace("{time}", "" + finishTime));
+                        }
+
+                        Map<Integer ,List<String>> leaderboard = Main.db.getLeaderboard();
+
+                        int beforeplace = 1;
+                        int nowPlace = 1;
+                        if (leaderboard.size() == 0) {
+                            beforeplace = 11;
+                        }
+                        for (List<String> x : leaderboard.values()) {
+                            if (x.get(2).equals(e.getPlayer().getUniqueId().toString())) {
+                                break;
+                            }
+                            beforeplace++;
+                        }
+                        for (List<String> x : leaderboard.values()) {
+                            if (Integer.parseInt(x.get(1)) > finishMili) {
+                                break;
+                            }
+                            nowPlace++;
+                        }
+
+                        if (beforeplace == 11 || beforeplace>nowPlace) {
+                            switch (nowPlace) {
+                                case 1:
+                                    e.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&',Main.getMainConfig().getString("Messages.Parkour.Leaderboard.Now-First")));
+                                    break;
+                                case 2:
+                                    e.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&',Main.getMainConfig().getString("Messages.Parkour.Leaderboard.Now-Second")));
+                                    break;
+                                case 3:
+                                    e.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&',Main.getMainConfig().getString("Messages.Parkour.Leaderboard.Now-Third")));
+                                    break;
+                                default:
+                                    break;
+                            }
+                        } else {
+                            switch (beforeplace) {
+                                case 1:
+                                    e.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&',Main.getMainConfig().getString("Messages.Parkour.Leaderboard.Still-First")));
+                                    break;
+                                case 2:
+                                    e.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&',Main.getMainConfig().getString("Messages.Parkour.Leaderboard.Still-Second")));
+                                    break;
+                                case 3:
+                                    e.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&',Main.getMainConfig().getString("Messages.Parkour.Leaderboard.Still-Third")));
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                        if (beatRecord || !beatBefore) {
+                            Main.db.newTime(e.getPlayer(), finishMili, beatBefore);
+                        }
+
+                    } else {
+                        if (beatBefore) {
+                            if (Main.getLeaderboard().getLong("times." + e.getPlayer().getUniqueId() + ".time") > finishMili) {
+                                e.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&',Main.getMainConfig().getString("Messages.Parkour.End.Beat-Previous-Personal-Best")).replace("{time}", "" + finishTime));
+                                Main.getLeaderboard().set("times." + e.getPlayer().getUniqueId() + ".time", finishMili);
+                                Main.saveYamls();
+                            } else {
+                                e.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&',Main.getMainConfig().getString("Messages.Parkour.End.Not-Beat-Previous-Personal-Best")).replace("{time}", "" + finishTime));
+                            }
+                        } else {
+                            e.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&',Main.getMainConfig().getString("Messages.Parkour.End.First-Time")).replace("{time}", "" + finishTime));
+                            Main.getLeaderboard().set("times." + e.getPlayer().getUniqueId() + ".time", (System.currentTimeMillis() - parkourTimes.get(e.getPlayer())));
+                            Main.saveYamls();
+                        }
+
+                        if (Main.getLeaderboard().getLong("leaderboard.1.Time") > finishMili||e.getPlayer().getUniqueId().toString().equals(Main.getLeaderboard().get("leaderboard.1.UUID").toString())) {
+                            if (e.getPlayer().getUniqueId().toString().equals(Main.getLeaderboard().get("leaderboard.1.UUID").toString())) {
+                                if (Main.getLeaderboard().getLong("leaderboard.1.Time") > finishMili) {
+                                    Main.getLeaderboard().set("leaderboard.1.Time", finishMili);
+                                }
+                                e.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&',Main.getMainConfig().getString("Messages.Parkour.Leaderboard.Still-First")));
+                            } else {
+                                if (!Main.getLeaderboard().get("leaderboard.2.UUID").toString().equals(e.getPlayer().getUniqueId().toString())) {
+                                    Main.getLeaderboard().set("leaderboard.3.Time", Main.getLeaderboard().getLong("leaderboard.2.Time"));
+                                    Main.getLeaderboard().set("leaderboard.3.UUID", Main.getLeaderboard().get("leaderboard.2.UUID"));
+                                    Main.getLeaderboard().set("leaderboard.3.PlayerName", Main.getLeaderboard().get("leaderboard.2.PlayerName"));
+                                }
+                                Main.getLeaderboard().set("leaderboard.2.Time", Main.getLeaderboard().getLong("leaderboard.1.Time"));
+                                Main.getLeaderboard().set("leaderboard.2.UUID", Main.getLeaderboard().get("leaderboard.1.UUID"));
+                                Main.getLeaderboard().set("leaderboard.2.PlayerName", Main.getLeaderboard().get("leaderboard.1.PlayerName"));
+
+                                Main.getLeaderboard().set("leaderboard.1.Time", finishMili);
+                                Main.getLeaderboard().set("leaderboard.1.UUID", e.getPlayer().getUniqueId().toString());
+                                Main.getLeaderboard().set("leaderboard.1.PlayerName", e.getPlayer().getName());
+                                e.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&',Main.getMainConfig().getString("Messages.Parkour.Leaderboard.Now-First")));
+                                Main.saveYamls();
+
+                            }
+                        } else if (Main.getLeaderboard().getDouble("leaderboard.2.Time") > finishMili||e.getPlayer().getUniqueId().toString().equals(Main.getLeaderboard().get("leaderboard.2.UUID").toString())) {
+                            if (e.getPlayer().getUniqueId().toString().equals(Main.getLeaderboard().get("leaderboard.2.UUID").toString())) {
+                                if (Main.getLeaderboard().getLong("leaderboard.2.Time") > finishMili) {
+                                    Main.getLeaderboard().set("leaderboard.2.Time", finishMili);
+                                }
+                                e.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&',Main.getMainConfig().getString("Messages.Parkour.Leaderboard.Still-Second")));
+
+                            } else {
                                 Main.getLeaderboard().set("leaderboard.3.Time", Main.getLeaderboard().getLong("leaderboard.2.Time"));
                                 Main.getLeaderboard().set("leaderboard.3.UUID", Main.getLeaderboard().get("leaderboard.2.UUID"));
                                 Main.getLeaderboard().set("leaderboard.3.PlayerName", Main.getLeaderboard().get("leaderboard.2.PlayerName"));
-                            }
-                            Main.getLeaderboard().set("leaderboard.2.Time", Main.getLeaderboard().getLong("leaderboard.1.Time"));
-                            Main.getLeaderboard().set("leaderboard.2.UUID", Main.getLeaderboard().get("leaderboard.1.UUID"));
-                            Main.getLeaderboard().set("leaderboard.2.PlayerName", Main.getLeaderboard().get("leaderboard.1.PlayerName"));
 
-                            Main.getLeaderboard().set("leaderboard.1.Time", finishMili);
-                            Main.getLeaderboard().set("leaderboard.1.UUID", e.getPlayer().getUniqueId().toString());
-                            Main.getLeaderboard().set("leaderboard.1.PlayerName", e.getPlayer().getName());
-                            e.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&',Main.getMainConfig().getString("Messages.Parkour.Leaderboard.Now-First")));
-                            Main.saveYamls();
-
-                            parkourChecks.remove(e.getPlayer());
-                            parkourTimes.remove(e.getPlayer());
-                            parkourPlayers.remove(e.getPlayer());
-                            return;
-                        }
-                    } else if (Main.getLeaderboard().getDouble("leaderboard.2.Time") > finishMili||e.getPlayer().getUniqueId().toString().equals(Main.getLeaderboard().get("leaderboard.2.UUID").toString())) {
-                        if (e.getPlayer().getUniqueId().toString().equals(Main.getLeaderboard().get("leaderboard.2.UUID").toString())) {
-                            if (Main.getLeaderboard().getLong("leaderboard.2.Time") > finishMili) {
                                 Main.getLeaderboard().set("leaderboard.2.Time", finishMili);
+                                Main.getLeaderboard().set("leaderboard.2.UUID", e.getPlayer().getUniqueId().toString());
+                                Main.getLeaderboard().set("leaderboard.2.PlayerName", e.getPlayer().getName());
+                                e.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&',Main.getMainConfig().getString("Messages.Parkour.Leaderboard.Now-Second")));
+                                Main.saveYamls();
+
                             }
-                            e.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&',Main.getMainConfig().getString("Messages.Parkour.Leaderboard.Still-Second")));
+                        }  else if (Main.getLeaderboard().getLong("leaderboard.3.Time") > finishMili||e.getPlayer().getUniqueId().toString().equals(Main.getLeaderboard().get("leaderboard.3.UUID").toString())) {
+                            if (e.getPlayer().getUniqueId().toString().equals(Main.getLeaderboard().get("leaderboard.3.UUID").toString())) {
+                                if (Main.getLeaderboard().getLong("leaderboard.3.Time") > finishMili) {
+                                    Main.getLeaderboard().set("leaderboard.3.Time", finishMili);
+                                }
+                                e.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&',Main.getMainConfig().getString("Messages.Parkour.Leaderboard.Still-Third")));
 
-                            parkourChecks.remove(e.getPlayer());
-                            parkourTimes.remove(e.getPlayer());
-                            parkourPlayers.remove(e.getPlayer());
-                            return;
-                        } else {
-                            Main.getLeaderboard().set("leaderboard.3.Time", Main.getLeaderboard().getLong("leaderboard.2.Time"));
-                            Main.getLeaderboard().set("leaderboard.3.UUID", Main.getLeaderboard().get("leaderboard.2.UUID"));
-                            Main.getLeaderboard().set("leaderboard.3.PlayerName", Main.getLeaderboard().get("leaderboard.2.PlayerName"));
-
-                            Main.getLeaderboard().set("leaderboard.2.Time", finishMili);
-                            Main.getLeaderboard().set("leaderboard.2.UUID", e.getPlayer().getUniqueId().toString());
-                            Main.getLeaderboard().set("leaderboard.2.PlayerName", e.getPlayer().getName());
-                            e.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&',Main.getMainConfig().getString("Messages.Parkour.Leaderboard.Now-Second")));
-                            Main.saveYamls();
-
-                            parkourChecks.remove(e.getPlayer());
-                            parkourTimes.remove(e.getPlayer());
-                            parkourPlayers.remove(e.getPlayer());
-                            return;
-                        }
-                    }  else if (Main.getLeaderboard().getLong("leaderboard.3.Time") > finishMili||e.getPlayer().getUniqueId().toString().equals(Main.getLeaderboard().get("leaderboard.3.UUID").toString())) {
-                        if (e.getPlayer().getUniqueId().toString().equals(Main.getLeaderboard().get("leaderboard.3.UUID").toString())) {
-                            if (Main.getLeaderboard().getLong("leaderboard.3.Time") > finishMili) {
+                            } else {
                                 Main.getLeaderboard().set("leaderboard.3.Time", finishMili);
+                                Main.getLeaderboard().set("leaderboard.3.UUID", e.getPlayer().getUniqueId().toString());
+                                Main.getLeaderboard().set("leaderboard.3.PlayerName", e.getPlayer().getName());
+                                e.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&',Main.getMainConfig().getString("Messages.Parkour.Leaderboard.Now-Third")));
+                                Main.saveYamls();
+
                             }
-                            e.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&',Main.getMainConfig().getString("Messages.Parkour.Leaderboard.Still-Third")));
-
-                            parkourChecks.remove(e.getPlayer());
-                            parkourTimes.remove(e.getPlayer());
-                            parkourPlayers.remove(e.getPlayer());
-                            return;
-                        } else {
-                            Main.getLeaderboard().set("leaderboard.3.Time", finishMili);
-                            Main.getLeaderboard().set("leaderboard.3.UUID", e.getPlayer().getUniqueId().toString());
-                            Main.getLeaderboard().set("leaderboard.3.PlayerName", e.getPlayer().getName());
-                            e.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&',Main.getMainConfig().getString("Messages.Parkour.Leaderboard.Now-Third")));
-                            Main.saveYamls();
-
-                            parkourChecks.remove(e.getPlayer());
-                            parkourTimes.remove(e.getPlayer());
-                            parkourPlayers.remove(e.getPlayer());
-                            return;
                         }
                     }
+
                     parkourChecks.remove(e.getPlayer());
                     parkourTimes.remove(e.getPlayer());
                     parkourPlayers.remove(e.getPlayer());

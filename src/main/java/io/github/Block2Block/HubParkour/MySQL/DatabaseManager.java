@@ -42,10 +42,10 @@ public class DatabaseManager {
 
     private void createTables() {
             try {
-                PreparedStatement statement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS hp_playertimes (`uuid` varchar(32) NOT NULL, `time` bigint(64) NOT NULL, `name` varchar(16) NOT NULL)");
+                PreparedStatement statement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS hp_playertimes (`uuid` varchar(36) NOT NULL PRIMARY KEY, `time` bigint(64) NOT NULL, `name` varchar(16) NOT NULL)");
                 boolean set = statement.execute();
 
-                statement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS hp_locations (`type` bit(3) NOT NULL,`x` bigint(64) NOT NULL,`y` bigint(64) NOT NULL,`z` bigint(64) NOT NULL, `checkno` bit(64) NULL, `world` varchar(64) NOT NULL)");
+                statement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS hp_locations (`type` tinyint(3) NOT NULL,`x` bigint(64) NOT NULL,`y` bigint(64) NOT NULL,`z` bigint(64) NOT NULL, `checkno` tinyint(64) NULL, `world` varchar(64) NOT NULL, PRIMARY KEY (x, y, z))");
                 set = statement.execute();
             } catch (Exception e) {
                 Bukkit.getLogger().log(Level.SEVERE, "There has been an error creating the tables. Database functionality has been disabled until the server is restarted. Try checking your config file to ensure that all details are correct and that your database is online. Stack trace:");
@@ -133,18 +133,21 @@ public class DatabaseManager {
                 List<String> record = new ArrayList<>();
                 record.add(results.getString(3));
                 record.add(results.getString(2));
+                record.add(results.getString(1));
                 leaderboard.put(1, record);
             }
             if (results.next()) {
                 List<String> record = new ArrayList<>();
                 record.add(results.getString(3));
                 record.add(results.getString(2));
+                record.add(results.getString(1));
                 leaderboard.put(2, record);
             }
             if (results.next()) {
                 List<String> record = new ArrayList<>();
                 record.add(results.getString(3));
                 record.add(results.getString(2));
+                record.add(results.getString(1));
                 leaderboard.put(3, record);
             }
 
@@ -171,6 +174,7 @@ public class DatabaseManager {
                 location.add(results.getString(3));
                 location.add(results.getString(4));
                 location.add(results.getString(5));
+                location.add(results.getString(6));
 
                 locations.add(location);
             }
@@ -209,9 +213,11 @@ public class DatabaseManager {
 
             ResultSet resultSet = statement.executeQuery();
 
-            resultSet.next();
+            if (!resultSet.next()) {
+                return false;
+            }
 
-            if (resultSet.getLong(1) < time) {
+            if (resultSet.getLong(1) > time) {
                 return true;
             }
         } catch (Exception e) {
@@ -230,7 +236,7 @@ public class DatabaseManager {
                 statement.setLong(1, time);
                 statement.setString(2, player.getUniqueId().toString());
 
-                ResultSet resultSet = statement.executeQuery();
+                boolean result = statement.execute();
             } catch (Exception e) {
                 Bukkit.getLogger().log(Level.SEVERE, "There has been an error accessing the database. Database functionality has been disabled until the server is restarted. Try checking your database is online. Stack trace:");
                 error = true;
@@ -244,7 +250,7 @@ public class DatabaseManager {
                 statement.setLong(2, time);
                 statement.setString(3, player.getName());
 
-                ResultSet resultSet = statement.executeQuery();
+                boolean result = statement.execute();
             } catch (Exception e) {
                 Bukkit.getLogger().log(Level.SEVERE, "There has been an error accessing the database. Database functionality has been disabled until the server is restarted. Try checking your database is online. Stack trace:");
                 error = true;

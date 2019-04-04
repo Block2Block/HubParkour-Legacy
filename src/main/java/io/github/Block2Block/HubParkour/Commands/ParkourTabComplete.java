@@ -19,18 +19,46 @@ public class ParkourTabComplete implements TabCompleter {
                 Player p = (Player) sender;
                 List<String> list = new ArrayList<>();
 
-                list.add("restart");
-                list.add("checkpoint");
-                list.add("leaderboard");
-                list.add("leave");
+                if ("restart".startsWith(args[0])) {
+                    list.add("restart");
+                }
+
+                if ("checkpoint".startsWith(args[0])) {
+                    list.add("checkpoint");
+                }
+
+                if ("leaderboard".startsWith(args[0])) {
+                    list.add("leaderboard");
+                }
+
+                if ("leave".startsWith(args[0])) {
+                    list.add("leave");
+                }
+
 
                 if (p.hasPermission("hubparkour.admin")) {
-                    list.add("setstart");
-                    list.add("setend");
-                    list.add("setrestart");
-                    list.add("setcheck");
-                    list.add("reload");
+                    if ("setstart".startsWith(args[0])) {
+                        list.add("setstart");
+                    }
+
+                    if ("setend".startsWith(args[0])) {
+                        list.add("setend");
+                    }
+
+                    if ("setrestart".startsWith(args[0])) {
+                        list.add("setrestart");
+                    }
+
+                    if ("setcheck".startsWith(args[0])) {
+                        list.add("setcheck");
+                    }
+
+                    if ("reload".startsWith(args[0])) {
+                        list.add("reload");
+                    }
+
                 }
+
 
                 Collections.sort(list);
 

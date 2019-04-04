@@ -67,15 +67,15 @@ Messages:
                 Failed: "&2Parkour>> &7The reload failed. Please make sure that you have formatted the file correctly."
             SetStart:
                 Successful: "&2Parkour>> &7You have successfully set the startpoint."
-                Invalid-Location: "&2Parkour>> &7That location is not valid! Please stand over a wooden pressure plate to set the spawn."
+                Invalid-Location: "&2Parkour>> &7That location is not valid! Please stand over your specified pressure plate to set the spawn. Check your config.yml to see what this is."
             SetEnd:
                 Successful: "&2Parkour>> &7You have successfully set the endpoint."
-                Invalid-Location: "&2Parkour>> &7That location is not valid! Please stand over an iron pressure plate to set the send."
+                Invalid-Location: "&2Parkour>> &7That location is not valid! Please stand over your specified pressure plate to set the send. Check your config.yml to see what this is."
             SetRestart:
                 Successful: "&2Parkour>> &7You have successfully set the restart point."
             SetCheck:
                 Successful: "&2Parkour>> &7You have successfully set checkpoint #{checkpoint}."
-                Invalid-Location: "&2Parkour>> &7That location is not valid! Please stand over an gold pressure plate to set a checkpoint."
+                Invalid-Location: "&2Parkour>> &7That location is not valid! Please stand over your specified pressure plate to set a checkpoint. Check your config.yml to see what this is."
                 Number-Format-Error: "&2Parkour>> &7Sorry, that is not a valid checkpoint!"
                 Invalid-Arguments: "&2Parkour>> &7Invalid Arguments. Correct Usage: &a/parkour setcheck {checkpoint}"
 
