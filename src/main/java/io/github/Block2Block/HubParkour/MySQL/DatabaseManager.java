@@ -45,7 +45,7 @@ public class DatabaseManager {
                 PreparedStatement statement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS hp_playertimes (`uuid` varchar(36) NOT NULL PRIMARY KEY, `time` bigint(64) NOT NULL, `name` varchar(16) NOT NULL)");
                 boolean set = statement.execute();
 
-                statement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS hp_locations (`type` tinyint(3) NOT NULL,`x` bigint(64) NOT NULL,`y` bigint(64) NOT NULL,`z` bigint(64) NOT NULL, `checkno` tinyint(64) NULL, `world` varchar(64) NOT NULL, PRIMARY KEY (x, y, z))");
+                statement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS hp_locations (`type` tinyint(3) NOT NULL,`x` bigint(64) NOT NULL,`y` bigint(64) NOT NULL,`z` bigint(64) NOT NULL, `checkno` tinyint(64) NULL, `world` varchar(64) NOT NULL, PRIMARY KEY (`type`, x, y, z))");
                 set = statement.execute();
             } catch (Exception e) {
                 Bukkit.getLogger().log(Level.SEVERE, "There has been an error creating the tables. Database functionality has been disabled until the server is restarted. Try checking your config file to ensure that all details are correct and that your database is online. Stack trace:");
@@ -93,7 +93,7 @@ public class DatabaseManager {
         try {
             PreparedStatement statement;
 
-            if (type==3) {
+            if (type!=3) {
                 statement = connection.prepareStatement("UPDATE hp_locations SET x = ?,y = ?, z = ?, world = ? WHERE type = ?");
 
                 statement.setInt(1, x);
@@ -109,6 +109,7 @@ public class DatabaseManager {
                 statement.setInt(3, z);
                 statement.setString(4, location.getWorld().getName());
                 statement.setInt(5, checkNo);
+
             }
 
             statement.execute();
@@ -163,7 +164,7 @@ public class DatabaseManager {
     public List<List<String>> getLocations() {
         List<List<String>> locations = new ArrayList<>();
         try {
-            PreparedStatement statement = connection.prepareStatement("SELECT * FROM hp_locations ");
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM hp_locations ORDER BY `type`, `checkno` ASC");
 
             ResultSet results = statement.executeQuery();
 

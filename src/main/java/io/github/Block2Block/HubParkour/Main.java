@@ -106,16 +106,50 @@ public class Main extends JavaPlugin {
                             case 0:
                                 start = true;
                                 getLogger().info("Start position found.");
+                                World world = Bukkit.getWorld(x.get(5));
+                                if (world == null) {
+                                    get().getLogger().info("One of the worlds you created the parkour in does not exist. Please reset your start position.");
+                                    continue;
+                                } else {
+                                    Location l = new Location(world, Integer.parseInt(x.get(1)), Integer.parseInt(x.get(2)), Integer.parseInt(x.get(3)));
+                                    PressurePlateInteractListener.setStart(l);
+                                }
+
                                 break;
                             case 1:
                                 end = true;
                                 getLogger().info("End position found.");
+                                World world2 = Bukkit.getWorld(x.get(5));
+                                if (world2 == null) {
+                                    get().getLogger().info("One of the worlds you created the parkour in does not exist. Please reset your start position.");
+                                    continue;
+                                } else {
+                                    Location l = new Location(world2, Integer.parseInt(x.get(1)), Integer.parseInt(x.get(2)), Integer.parseInt(x.get(3)));
+                                    PressurePlateInteractListener.setEnd(l);
+                                }
                                 break;
                             case 2:
                                 reset = true;
                                 getLogger().info("Restart position found.");
+                                World world3 = Bukkit.getWorld(x.get(5));
+                                if (world3 == null) {
+                                    get().getLogger().info("One of the worlds you created the parkour in does not exist. Please reset your start position.");
+                                    continue;
+                                } else {
+                                    Location l = new Location(world3, Integer.parseInt(x.get(1)), Integer.parseInt(x.get(2)), Integer.parseInt(x.get(3)));
+                                    PressurePlateInteractListener.setRestart(l);
+                                }
                                 break;
                             case 3:
+                                World world4 = Bukkit.getWorld(x.get(5));
+                                if (world4 == null) {
+                                    get().getLogger().info("One of the worlds you created the parkour in does not exist. Please reset your checkpoints.");
+                                    continue;
+                                } else {
+                                    Location l = new Location(world4, Integer.parseInt(x.get(1)), Integer.parseInt(x.get(2)), Integer.parseInt(x.get(3)));
+                                    PressurePlateInteractListener.getCheckLocations().add(l);
+                                    PressurePlateInteractListener.setCheck(Integer.parseInt(x.get(4)), l);
+                                }
                                 continue;
                         }
                     }
@@ -123,7 +157,7 @@ public class Main extends JavaPlugin {
                         getLogger().info("All positions found. Generating holograms...");
                         generateHolograms(true);
                     } else {
-                        getLogger().info("The parkour has not been setup yet, the Holograms have not been generated.");
+                        getLogger().info("The parkour has not been setup yet, the Holograms have not been generated. If you have setup your start and end point, make sure you set your restart point and then restart the server.");
                     }
                 } else {
                     if (getStorage().isSet("spawn.location") && getStorage().isSet("end.location") && getStorage().isSet("reset.location")) {
@@ -135,27 +169,29 @@ public class Main extends JavaPlugin {
             }
         }
 
-
-        for (String s : getStorage().getKeys(false)) {
-            if (s.equalsIgnoreCase("spawn")) {
-                Location l = (Location) getStorage().get("spawn.location");
-                PressurePlateInteractListener.setStart(l);
-            } else if (s.equalsIgnoreCase("end")) {
-                Location l = (Location) getStorage().get("end.location");
-                PressurePlateInteractListener.setEnd(l);
-            } else if (s.equalsIgnoreCase("reset")) {
-                continue;
-            } else {
-                Location l = (Location) getStorage().get(s + ".location");
-                if (!PressurePlateInteractListener.getCheckLocations().contains(l)) {
-                    PressurePlateInteractListener.getCheckLocations().add(l);
+        if (!dbEnabled) {
+            for (String s : getStorage().getKeys(false)) {
+                if (s.equalsIgnoreCase("spawn")) {
+                    Location l = (Location) getStorage().get("spawn.location");
+                    PressurePlateInteractListener.setStart(l);
+                } else if (s.equalsIgnoreCase("end")) {
+                    Location l = (Location) getStorage().get("end.location");
+                    PressurePlateInteractListener.setEnd(l);
+                } else if (s.equalsIgnoreCase("reset")) {
+                    continue;
+                } else {
+                    Location l = (Location) getStorage().get(s + ".location");
+                    if (!PressurePlateInteractListener.getCheckLocations().contains(l)) {
+                        PressurePlateInteractListener.getCheckLocations().add(l);
+                    }
                 }
             }
         }
+
         getLogger().info("HubParkour has been successfully enabled.");
-        if (getMainConfig().getBoolean("Settings.Version-Checker")) {
+        if (getMainConfig().getBoolean("Settings.Version-Checker.Enabled")) {
             String version = newVersionCheck();
-            if (!version.equals(null)) {
+            if (version != null) {
                 getLogger().info("HubParkour v" + version + " is out now! I highly recommend you download the new version!");
             } else {
                 getLogger().info("Your HubParkour version is up to date!");
@@ -163,9 +199,9 @@ public class Main extends JavaPlugin {
         }
     }
 
-    public String newVersionCheck() {
+    public static String newVersionCheck() {
         try {
-            String oldVersion = this.getDescription().getVersion();
+            String oldVersion = get().getDescription().getVersion();
             String newVersion = fetchSpigotVersion();
             if(!newVersion.equals(oldVersion)) {
                 return newVersion;
@@ -173,12 +209,12 @@ public class Main extends JavaPlugin {
             return null;
         }
         catch(Exception e) {
-            getLogger().info("Unable to check for new versions.");
+            get().getLogger().info("Unable to check for new versions.");
         }
         return null;
     }
 
-    private String fetchSpigotVersion() {
+    private static String fetchSpigotVersion() {
         try {
             // We're connecting to spigot's API
             URL url = new URL("https://www.spigotmc.org/api/general.php");
@@ -424,7 +460,7 @@ public class Main extends JavaPlugin {
 
 
 
-    private void generateHolograms(boolean isDatabase) {
+    public static void generateHolograms(boolean isDatabase) {
         if (isDatabase) {
             List<List<String>> locations = db.getLocations();
             for (List<String> x : locations) {
@@ -432,16 +468,16 @@ public class Main extends JavaPlugin {
                     case 0:
                         World world = Bukkit.getWorld(x.get(5));
                         if (world == null) {
-                            getLogger().info("One of the worlds you created the parkour in does not exist. Please reset your start position.");
+                            get().getLogger().info("One of the worlds you created the parkour in does not exist. Please reset your start position.");
                             return;
                         }
                         Location l = new Location(world, Integer.parseInt(x.get(1)), Integer.parseInt(x.get(2)), Integer.parseInt(x.get(3)));
                         l.setX(l.getX() + 0.5);
                         l.setZ(l.getZ() + 0.5);
                         l.setY(l.getY() + 2);
-                        Hologram hologram = HologramsAPI.createHologram(this, l);
+                        Hologram hologram = HologramsAPI.createHologram(get(), l);
                         TextLine textLine = hologram.appendTextLine(ChatColor.translateAlternateColorCodes('&', getMainConfig().getString("Messages.Holograms.Start")));
-                        holograms.add(hologram);
+                        holograms.add(0, hologram);
                         l.setX(l.getX() - 0.5);
                         l.setZ(l.getZ() - 0.5);
                         l.setY(l.getY() - 2);
@@ -450,16 +486,16 @@ public class Main extends JavaPlugin {
                     case 1:
                         World world1 = Bukkit.getWorld(x.get(5));
                         if (world1 == null) {
-                            getLogger().info("One of the worlds you created the parkour in does not exist. Please reset your end position.");
+                            get().getLogger().info("One of the worlds you created the parkour in does not exist. Please reset your end position.");
                             return;
                         }
                         Location l1 = new Location(world1, Integer.parseInt(x.get(1)), Integer.parseInt(x.get(2)), Integer.parseInt(x.get(3)));
                         l1.setX(l1.getX() + 0.5);
                         l1.setZ(l1.getZ() + 0.5);
                         l1.setY(l1.getY() + 2);
-                        Hologram hologram1 = HologramsAPI.createHologram(this, l1);
+                        Hologram hologram1 = HologramsAPI.createHologram(get(), l1);
                         TextLine textLine1 = hologram1.appendTextLine(ChatColor.translateAlternateColorCodes('&', getMainConfig().getString("Messages.Holograms.End")));
-                        holograms.add(hologram1);
+                        holograms.add(1, hologram1);
                         l1.setX(l1.getX() - 0.5);
                         l1.setZ(l1.getZ() - 0.5);
                         l1.setY(l1.getY() - 2);
@@ -468,7 +504,7 @@ public class Main extends JavaPlugin {
                     case 2:
                         World world2 = Bukkit.getWorld(x.get(5));
                         if (world2 == null) {
-                            getLogger().info("One of the worlds you created the parkour in does not exist. Please reset your end position.");
+                            get().getLogger().info("One of the worlds you created the parkour in does not exist. Please reset your end position.");
                             return;
                         }
 
@@ -479,16 +515,16 @@ public class Main extends JavaPlugin {
 
                         World world3 = Bukkit.getWorld(x.get(5));
                         if (world3 == null) {
-                            getLogger().info("One of the worlds you created the parkour in does not exist. Please reset your checkpoints.");
+                            get().getLogger().info("One of the worlds you created the parkour in does not exist. Please reset your checkpoints.");
                             return;
                         }
                         Location l3 = new Location(world3, Integer.parseInt(x.get(1)), Integer.parseInt(x.get(2)), Integer.parseInt(x.get(3)));
                         l3.setY(l3.getY() + 2);
                         l3.setX(l3.getX() + 0.5);
                         l3.setZ(l3.getZ() + 0.5);
-                        Hologram hologram3 = HologramsAPI.createHologram(this, l3);
+                        Hologram hologram3 = HologramsAPI.createHologram(get(), l3);
                         TextLine textLine3 = hologram3.appendTextLine(ChatColor.translateAlternateColorCodes('&', getMainConfig().getString("Messages.Holograms.Checkpoint").replace("{checkpoint}",x.get(4))));
-                        holograms.add(hologram3);
+                        holograms.add(Integer.parseInt(x.get(4)) + 1, hologram3);
                         l3.setY(l3.getY() - 2);
                         l3.setX(l3.getX() - 0.5);
                         l3.setZ(l3.getZ() - 0.5);
@@ -505,7 +541,7 @@ public class Main extends JavaPlugin {
                     l.setX(l.getX() + 0.5);
                     l.setZ(l.getZ() + 0.5);
                     l.setY(l.getY() + 2);
-                    Hologram hologram = HologramsAPI.createHologram(this, l);
+                    Hologram hologram = HologramsAPI.createHologram(get(), l);
                     TextLine textLine = hologram.appendTextLine(ChatColor.translateAlternateColorCodes('&', getMainConfig().getString("Messages.Holograms.Start")));
                     holograms.add(hologram);
                     l.setX(l.getX() - 0.5);
@@ -517,7 +553,7 @@ public class Main extends JavaPlugin {
                     l.setY(l.getY() + 2);
                     l.setX(l.getX() + 0.5);
                     l.setZ(l.getZ() + 0.5);
-                    Hologram hologram = HologramsAPI.createHologram(this, l);
+                    Hologram hologram = HologramsAPI.createHologram(get(), l);
                     TextLine textLine = hologram.appendTextLine(ChatColor.translateAlternateColorCodes('&', getMainConfig().getString("Messages.Holograms.End")));
                     holograms.add(hologram);
                     l.setY(l.getY() - 2);
@@ -531,7 +567,7 @@ public class Main extends JavaPlugin {
                     l.setY(l.getY() + 2);
                     l.setX(l.getX() + 0.5);
                     l.setZ(l.getZ() + 0.5);
-                    Hologram hologram = HologramsAPI.createHologram(this, l);
+                    Hologram hologram = HologramsAPI.createHologram(get(), l);
                     TextLine textLine = hologram.appendTextLine(ChatColor.translateAlternateColorCodes('&', getMainConfig().getString("Messages.Holograms.Checkpoint").replace("{checkpoint}",s)));
                     holograms.add(hologram);
                     l.setY(l.getY() - 2);

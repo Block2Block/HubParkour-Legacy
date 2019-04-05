@@ -28,7 +28,7 @@ public class ConfigParser {
         if(!Main.getMainConfig().contains("Messages.Commands.Admin.SetCheck.Successful")) Main.getMainConfig().set("Messages.Commands.Admin.SetCheck.Successful", "&2Parkour>> &7You have successfully set checkpoint #{checkpoint}.");
         if(!Main.getMainConfig().contains("Messages.Commands.Admin.SetCheck.Invalid-Location")) Main.getMainConfig().set("Messages.Commands.Admin.SetCheck.Invalid-Location", "&2Parkour>> &7That location is not valid! Please stand over an gold pressure plate to set a checkpoint.");
         if(!Main.getMainConfig().contains("Messages.Commands.Admin.SetCheck.Number-Format-Error")) Main.getMainConfig().set("Messages.Commands.Admin.SetCheck.Number-Format-Error", "&2Parkour>> &7Sorry, that is not a valid checkpoint!");
-        if(!Main.getMainConfig().contains("Messages.Commands.Admin.SetCheck.InvalidArguments")) Main.getMainConfig().set("Messages.Commands.Admin.SetCheck.InvalidArguments", "&2Parkour>> &7Invalid Arguments. Correct Usage: &a/parkour setcheck {checkpoint}");
+        if(!Main.getMainConfig().contains("Messages.Commands.Admin.SetCheck.Invalid-Arguments")) Main.getMainConfig().set("Messages.Commands.Admin.SetCheck.InvalidArguments", "&2Parkour>> &7Invalid Arguments. Correct Usage: &a/parkour setcheck {checkpoint}");
         if(!Main.getMainConfig().contains("Messages.Parkour.Started")) Main.getMainConfig().set("Messages.Parkour.Started", "&2Parkour>> &7You have started the parkour!");
         if(!Main.getMainConfig().contains("Messages.Parkour.Restarted")) Main.getMainConfig().set("Messages.Parkour.Restarted", "&2Parkour>> &7You have restarted the parkour! Your time has been reset to 0!");
         if(!Main.getMainConfig().contains("Messages.Parkour.Checkpoints.Reached")) Main.getMainConfig().set("Messages.Parkour.Checkpoints.Reached", "&2Parkour>> &7You have reached checkpoint #{checkpoint}! You have received $100 as a reward!");
@@ -47,13 +47,16 @@ public class ConfigParser {
         if(!Main.getMainConfig().contains("Messages.Parkour.Leaderboard.Now-Third")) Main.getMainConfig().set("Messages.Parkour.Leaderboard.Now-Third", "&2Parkour>> &7Well done! You have entered 3rd place!");
         if(!Main.getMainConfig().contains("Messages.Parkour.Leave.Left")) Main.getMainConfig().set("Messages.Parkour.Leave.Left", "&2Parkour>> &7You have left the parkour and your time has been reset.");
         if(!Main.getMainConfig().contains("Messages.Parkour.Leave.Not-In-Parkour")) Main.getMainConfig().set("Messages.Parkour.Leave.Not-In-Parkour", "&2Parkour>> &7You must have started the parkour in order to leave it.");
+        if(!Main.getMainConfig().contains("Messages.Commands.Admin.SetCheck.Not-Enough-Checkpoints")) Main.getMainConfig().set("Messages.Commands.Admin.SetCheck.Not-Enough-Checkpoints", "&2Parkour>> &7You have not set up enough checkpoints in order to set checkpoint {checkpoint}. Please set checkpoint {set-checkpoint} first.");
+        if(!Main.getMainConfig().contains("Messages.Commands.Admin.Not-Setup-Parkour")) Main.getMainConfig().set("Messages.Commands.Admin.Not-Setup-Parkour", "&2Parkour>> &7You have not set up your parkour yet. Set your start, end and restart point in order to set up your parkour fully.");
 
 
         //Settings
         if(!Main.getMainConfig().contains("Settings.Holograms")) Main.getMainConfig().set("Settings.Holograms", false);
         if(!Main.getMainConfig().contains("Settings.Must-Complete-All-Checkpoints")) Main.getMainConfig().set("Settings.Must-Complete-All-Checkpoints", true);
         if(!Main.getMainConfig().contains("Settings.Join-Message")) Main.getMainConfig().set("Settings.Join-Message", true);
-        if(!Main.getMainConfig().contains("Settings.Version-Checker")) {Main.getMainConfig().set("Settings.Version-Checker", true);}
+        if(!Main.getMainConfig().contains("Settings.Version-Checker.Enabled")) {Main.getMainConfig().set("Settings.Version-Checker.Enabled", true);}
+        if(!Main.getMainConfig().contains("Settings.Version-Checker.On-Join")) {Main.getMainConfig().set("Settings.Version-Checker.On-Join", true);}
         if(!Main.getMainConfig().contains("Settings.Database.Enabled")) Main.getMainConfig().set("Settings.Database.Enabled", false);
         if(!Main.getMainConfig().contains("Settings.Database.Type")) Main.getMainConfig().set("Settings.Database.Type", "SQLite");
         if(!Main.getMainConfig().contains("Settings.Database.Details.MySQL.Hostname")) Main.getMainConfig().set("Settings.Database.Details.MySQL.Hostname", "localhost");
@@ -98,7 +101,7 @@ public class ConfigParser {
         if(!Main.getMainConfig().isString("Messages.Commands.Admin.SetCheck.Successful")) Main.addConfig("Messages.Commands.Admin.SetCheck.Successful", "&2Parkour>> &7You have successfully set checkpoint #{checkpoint}.");
         if(!Main.getMainConfig().isString("Messages.Commands.Admin.SetCheck.Invalid-Location")) Main.addConfig("Messages.Commands.Admin.SetCheck.Invalid-Location", "&2Parkour>> &7That location is not valid! Please stand over an gold pressure plate to set a checkpoint.");
         if(!Main.getMainConfig().isString("Messages.Commands.Admin.SetCheck.Number-Format-Error")) Main.addConfig("Messages.Commands.Admin.SetCheck.Number-Format-Error", "&2Parkour>> &7Sorry, that is not a valid checkpoint!");
-        if(!Main.getMainConfig().isString("Messages.Commands.Admin.SetCheck.InvalidArguments")) Main.addConfig("Messages.Commands.Admin.SetCheck.InvalidArguments", "&2Parkour>> &7Invalid Arguments. Correct Usage: &a/parkour setcheck {checkpoint}");
+        if(!Main.getMainConfig().isString("Messages.Commands.Admin.SetCheck.Invalid-Arguments")) Main.addConfig("Messages.Commands.Admin.SetCheck.InvalidArguments", "&2Parkour>> &7Invalid Arguments. Correct Usage: &a/parkour setcheck {checkpoint}");
         if(!Main.getMainConfig().isString("Messages.Parkour.Started")) Main.addConfig("Messages.Parkour.Started", "&2Parkour>> &7You have started the parkour!");
         if(!Main.getMainConfig().isString("Messages.Parkour.Restarted")) Main.addConfig("Messages.Parkour.Restarted", "&2Parkour>> &7You have restarted the parkour! Your time has been reset to 0!");
         if(!Main.getMainConfig().isString("Messages.Parkour.Checkpoints.Reached")) Main.addConfig("Messages.Parkour.Checkpoints.Reached", "&2Parkour>> &7You have reached checkpoint #{checkpoint}! You have received $100 as a reward!");
@@ -117,13 +120,16 @@ public class ConfigParser {
         if(!Main.getMainConfig().isString("Messages.Parkour.Leaderboard.Now-Third")) Main.addConfig("Messages.Parkour.Leaderboard.Now-Third", "&2Parkour>> &7Well done! You have entered 3rd place!");
         if(!Main.getMainConfig().isString("Messages.Parkour.Leave.Left")) Main.addConfig("Messages.Parkour.Leave.Left", "&2Parkour>> &7You have left the parkour and your time has been reset.");
         if(!Main.getMainConfig().isString("Messages.Parkour.Leave.Not-In-Parkour")) Main.addConfig("Messages.Parkour.Leave.Not-In-Parkour", "&2Parkour>> &7You must have started the parkour in order to leave it.");
+        if(!Main.getMainConfig().isString("Messages.Commands.Admin.SetCheck.Not-Enough-Checkpoints")) Main.getMainConfig().set("Messages.Commands.Admin.SetCheck.Not-Enough-Checkpoints", "&2Parkour>> &7You have not set up enough checkpoints in order to set checkpoint {checkpoint}. Please set checkpoint {set-checkpoint} first.");
+        if(!Main.getMainConfig().isString("Messages.Commands.Admin.Not-Setup-Parkour")) Main.getMainConfig().set("Messages.Commands.Admin.Not-Setup-Parkour", "&2Parkour>> &7You have not set up your parkour yet. Set your start, end and restart point in order to set up your parkour fully.");
 
 
         //Settings
         if(!Main.getMainConfig().isBoolean("Settings.Holograms")) Main.addConfig("Settings.Holograms", false);
         if(!Main.getMainConfig().isBoolean("Settings.Must-Complete-All-Checkpoints")) Main.addConfig("Settings.Must-Complete-All-Checkpoints", true);
         if(!Main.getMainConfig().isBoolean("Settings.Join-Message")) Main.addConfig("Settings.Join-Message", true);
-        if(!Main.getMainConfig().isBoolean("Settings.Version-Checker")) {Main.addConfig("Settings.Version-Checker", true);}
+        if(!Main.getMainConfig().isBoolean("Settings.Version-Checker.Enabled")) {Main.getMainConfig().set("Settings.Version-Checker.Enabled", true);}
+        if(!Main.getMainConfig().isBoolean("Settings.Version-Checker.On-Join")) {Main.getMainConfig().set("Settings.Version-Checker.On-Join", true);}
         if(!Main.getMainConfig().isBoolean("Settings.Database.Enabled")) Main.addConfig("Settings.Database.Enabled", false);
         if(!Main.getMainConfig().isString("Settings.Database.Type")) Main.addConfig("Settings.Database.Type", "SQLite");
         if(!Main.getMainConfig().isString("Settings.Database.Details.MySQL.Hostname")) Main.addConfig("Settings.Database.Details.MySQL.Hostname", "localhost");

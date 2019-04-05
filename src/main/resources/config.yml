@@ -78,6 +78,8 @@ Messages:
                 Invalid-Location: "&2Parkour>> &7That location is not valid! Please stand over your specified pressure plate to set a checkpoint. Check your config.yml to see what this is."
                 Number-Format-Error: "&2Parkour>> &7Sorry, that is not a valid checkpoint!"
                 Invalid-Arguments: "&2Parkour>> &7Invalid Arguments. Correct Usage: &a/parkour setcheck {checkpoint}"
+                Not-Enough-Checkpoints: "&2Parkour>> &7You have not set up enough checkpoints in order to set checkpoint {checkpoint}. Please set checkpoint {set-checkpoint} first."
+            Not-Setup-Parkour: "&2Parkour>> &7You have not set up your parkour yet. Set your start, end and restart point in order to set up your parkour fully."
 
     #Messages displayed while the user is doing parkour.
     Parkour:
@@ -107,7 +109,9 @@ Settings:
     Holograms: false
     Must-Complete-All-Checkpoints: true
     Join-Message: true
-    Version-Checker: true
+    Version-Checker:
+        Enabled: true
+        On-Join: true
 
     #MySQL/SQLite settings. Adds support for cross server player times and leaderboards.
     #Note: The pressure plates must be in exactly the same location (including the types) in all servers in order for this to work.

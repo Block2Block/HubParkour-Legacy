@@ -1,5 +1,6 @@
 package io.github.Block2Block.HubParkour.Commands;
 
+import com.apple.eawt.AppEvent;
 import com.gmail.filoghost.holographicdisplays.api.Hologram;
 import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 import com.gmail.filoghost.holographicdisplays.api.line.TextLine;
@@ -89,30 +90,52 @@ public class CommandParkour implements CommandExecutor {
                 case "setstart":
                     if (((Player) sender).hasPermission("hubparkour.admin")) {
                         if (((Player) sender).getLocation().getBlock().getType().equals(PressurePlateInteractListener.getStartType())) {
+                            boolean generateHolograms = false;
+                            Location l = ((Player) sender).getLocation().getBlock().getLocation();
+                            if (PressurePlateInteractListener.getEnd() != null && PressurePlateInteractListener.getRestart() != null) {
+                                if (getStart() != null) {
+                                    Hologram h = Main.getHolograms().get(0);
+                                    h.delete();
+                                    Main.getHolograms().remove(0);
+                                    l.setX(l.getX() + 0.5);
+                                    l.setZ(l.getZ() + 0.5);
+                                    l.setY(l.getY() + 2);
+                                    Hologram hologram = HologramsAPI.createHologram(Main.get(), l);
+                                    TextLine textLine = hologram.appendTextLine(ChatColor.translateAlternateColorCodes('&', Main.getMainConfig().getString("Messages.Holograms.Start")));
+                                    Main.getHolograms().add(0, hologram);
+                                    l.setX(l.getX() - 0.5);
+                                    l.setZ(l.getZ() - 0.5);
+                                    l.setY(l.getY() - 2);
+                                } else {
+                                    generateHolograms = true;
+                                }
+                            }
+
+
                             if (Main.dbEnabled) {
                                 if (PressurePlateInteractListener.getStart() == null) {
                                     Main.db.addLocation(((Player) sender).getLocation().getBlock().getLocation(), 0, -1);
                                 } else {
                                     Main.db.setLocation(((Player) sender).getLocation().getBlock().getLocation(), 0, -1);
                                 }
+                                if (Main.isHologramsActive()) {
+                                    if (Main.getMainConfig().getBoolean("Settings.Holograms")) {
+                                        if (generateHolograms) {
+                                            Main.generateHolograms(true);
+                                        }
+                                    }
+                                }
                             } else {
                                 Main.addStorage("spawn.location", ((Player) sender).getLocation().getBlock().getLocation());
-                            }
-
-                            Location l = ((Player) sender).getLocation().getBlock().getLocation();
-                            if (Main.isHologramsActive()) {
-                                if (Main.getMainConfig().getBoolean("Settings.Holograms")) {
-                                    l.setY(l.getY() + 2);
-                                    l.setX(l.getX() + 0.5);
-                                    l.setZ(l.getZ() + 0.5);
-                                    Hologram hologram = HologramsAPI.createHologram(Main.get(), l);
-                                    TextLine textLine = hologram.appendTextLine(ChatColor.translateAlternateColorCodes('&',Main.getMainConfig().getString("Messages.Holograms.Start")));
-                                    Main.getHolograms().add(hologram);
-                                    l.setX(l.getX() - 0.5);
-                                    l.setZ(l.getZ() - 0.5);
-                                    l.setY(l.getY() - 2);
+                                if (Main.isHologramsActive()) {
+                                    if (Main.getMainConfig().getBoolean("Settings.Holograms")) {
+                                        if (generateHolograms) {
+                                            Main.generateHolograms(false);
+                                        }
+                                    }
                                 }
                             }
+
                             setStart(l);
                             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', Main.getMainConfig().getString("Messages.Commands.Admin.SetStart.Successful")));
 
@@ -126,29 +149,52 @@ public class CommandParkour implements CommandExecutor {
                 case "setend":
                     if (((Player) sender).hasPermission("hubparkour.admin")) {
                         if (((Player) sender).getLocation().getBlock().getType().equals(PressurePlateInteractListener.getEndType())) {
+                            boolean generateHolograms = false;
+                            Location l = ((Player) sender).getLocation().getBlock().getLocation();
+                            if (PressurePlateInteractListener.getStart() != null && PressurePlateInteractListener.getRestart() != null) {
+                                if (getEnd() != null) {
+                                    Hologram h = Main.getHolograms().get(1);
+                                    h.delete();
+                                    Main.getHolograms().remove(1);
+                                    l.setX(l.getX() + 0.5);
+                                    l.setZ(l.getZ() + 0.5);
+                                    l.setY(l.getY() + 2);
+                                    Hologram hologram = HologramsAPI.createHologram(Main.get(), l);
+                                    TextLine textLine = hologram.appendTextLine(ChatColor.translateAlternateColorCodes('&', Main.getMainConfig().getString("Messages.Holograms.End")));
+                                    Main.getHolograms().add(1, hologram);
+                                    l.setX(l.getX() - 0.5);
+                                    l.setZ(l.getZ() - 0.5);
+                                    l.setY(l.getY() - 2);
+                                } else {
+                                    generateHolograms = true;
+                                }
+                            }
+
                             if (Main.dbEnabled) {
                                 if (PressurePlateInteractListener.getEnd() == null) {
                                     Main.db.addLocation(((Player) sender).getLocation().getBlock().getLocation(), 1, -1);
                                 } else {
                                     Main.db.setLocation(((Player) sender).getLocation().getBlock().getLocation(), 1, -1);
                                 }
+
+                                if (Main.isHologramsActive()) {
+                                    if (Main.getMainConfig().getBoolean("Settings.Holograms")) {
+                                        if (generateHolograms) {
+                                            Main.generateHolograms(true);
+                                        }
+                                    }
+                                }
                             } else {
                                 Main.addStorage("end.location", ((Player) sender).getLocation().getBlock().getLocation());
-                            }
-                            Location l = ((Player) sender).getLocation().getBlock().getLocation();
-                            if (Main.isHologramsActive()) {
-                                if (Main.getMainConfig().getBoolean("Settings.Holograms")) {
-                                    l.setY(l.getY() + 2);
-                                    l.setX(l.getX() + 0.5);
-                                    l.setZ(l.getZ() + 0.5);
-                                    Hologram hologram = HologramsAPI.createHologram(Main.get(), l);
-                                    TextLine textLine = hologram.appendTextLine(ChatColor.translateAlternateColorCodes('&',Main.getMainConfig().getString("Messages.Holograms.End")));
-                                    Main.getHolograms().add(hologram);
-                                    l.setX(l.getX() - 0.5);
-                                    l.setZ(l.getZ() - 0.5);
-                                    l.setY(l.getY() - 2);
+                                if (Main.isHologramsActive()) {
+                                    if (Main.getMainConfig().getBoolean("Settings.Holograms")) {
+                                        if (generateHolograms) {
+                                            Main.generateHolograms(false);
+                                        }
+                                    }
                                 }
                             }
+
                             setEnd(l);
                             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', Main.getMainConfig().getString("Messages.Commands.Admin.SetEnd.Successful")));
                         } else {
@@ -170,6 +216,15 @@ public class CommandParkour implements CommandExecutor {
                         } else {
                             Main.addStorage("reset.location", l);
                         }
+
+                        if (PressurePlateInteractListener.getStart() != null && PressurePlateInteractListener.getEnd() != null && PressurePlateInteractListener.getRestart() == null) {
+                            if (Main.dbEnabled) {
+                                Main.generateHolograms(true);
+                            } else {
+                                Main.generateHolograms(false);
+                            }
+                        }
+
                         PressurePlateInteractListener.setRestart(l);
                         sender.sendMessage(ChatColor.translateAlternateColorCodes('&', Main.getMainConfig().getString("Messages.Commands.Admin.SetRestart.Successful")));
                     } else {
@@ -188,6 +243,31 @@ public class CommandParkour implements CommandExecutor {
                                 sender.sendMessage(ChatColor.translateAlternateColorCodes('&',Main.getMainConfig().getString("Messages.Commands.Admin.SetCheck.Invalid-Arguments")));
                                 return true;
                             }
+                            if (Integer.parseInt(args[1])-1 > getCheckLocations().size()) {
+                                sender.sendMessage(ChatColor.translateAlternateColorCodes('&',Main.getMainConfig().getString("Messages.Commands.Admin.SetCheck.Not-Enough-Checkpoints").replace("{checkpoint}",args[1]).replace("{set-checkpoint}", Integer.toString(getCheckLocations().size() + 1))));
+                                return true;
+                            }
+                            boolean generateHolograms = false;
+                            Location l = ((Player) sender).getLocation().getBlock().getLocation();
+                            if (PressurePlateInteractListener.getEnd() != null && PressurePlateInteractListener.getRestart() != null && PressurePlateInteractListener.getStart() != null) {
+                                if (getCheck(Integer.parseInt(args[1])) != null) {
+                                    Hologram h = Main.getHolograms().get(Integer.parseInt(args[1]) + 1);
+                                    h.delete();
+                                    Main.getHolograms().remove(Integer.parseInt(args[1]) + 1);
+                                    l.setX(l.getX() + 0.5);
+                                    l.setZ(l.getZ() + 0.5);
+                                    l.setY(l.getY() + 2);
+                                    Hologram hologram = HologramsAPI.createHologram(Main.get(), l);
+                                    TextLine textLine = hologram.appendTextLine(ChatColor.translateAlternateColorCodes('&',Main.getMainConfig().getString("Messages.Holograms.Checkpoint")).replace("{checkpoint}", args[1]));
+                                    Main.getHolograms().add(Integer.parseInt(args[1]) + 1, hologram);
+                                    l.setX(l.getX() - 0.5);
+                                    l.setZ(l.getZ() - 0.5);
+                                    l.setY(l.getY() - 2);
+                                    getCheckLocations().remove(Integer.parseInt(args[1]) - 1);
+                                } else {
+                                    generateHolograms = true;
+                                }
+                            }
                             if (Main.dbEnabled) {
                                 if (PressurePlateInteractListener.getCheck(Integer.parseInt(args[1])) != null) {
                                     Main.db.setLocation(((Player) sender).getLocation().getBlock().getLocation(), 3, Integer.parseInt(args[1]));
@@ -197,21 +277,23 @@ public class CommandParkour implements CommandExecutor {
                             } else {
                                 Main.addStorage(args[1] + ".location", ((Player) sender).getLocation().getBlock().getLocation());
                             }
-                            Location l = ((Player) sender).getLocation().getBlock().getLocation();
+
                             if (Main.isHologramsActive()) {
                                 if (Main.getMainConfig().getBoolean("Settings.Holograms")) {
-                                    l.setY(l.getY() + 2);
-                                    l.setX(l.getX() + 0.5);
-                                    l.setZ(l.getZ() + 0.5);
-                                    Hologram hologram = HologramsAPI.createHologram(Main.get(), l);
-                                    TextLine textLine = hologram.appendTextLine(ChatColor.translateAlternateColorCodes('&',Main.getMainConfig().getString("Messages.Holograms.Checkpoint")).replace("{checkpoint}", args[1]));
-                                    l.setX(l.getX() - 0.5);
-                                    l.setZ(l.getZ() - 0.5);
-                                    l.setY(l.getY() - 2);
-                                    Main.getHolograms().add(hologram);
+                                    if (generateHolograms) {
+                                        l.setY(l.getY() + 2);
+                                        l.setX(l.getX() + 0.5);
+                                        l.setZ(l.getZ() + 0.5);
+                                        Hologram hologram = HologramsAPI.createHologram(Main.get(), l);
+                                        TextLine textLine = hologram.appendTextLine(ChatColor.translateAlternateColorCodes('&',Main.getMainConfig().getString("Messages.Holograms.Checkpoint")).replace("{checkpoint}", args[1]));
+                                        l.setX(l.getX() - 0.5);
+                                        l.setZ(l.getZ() - 0.5);
+                                        l.setY(l.getY() - 2);
+                                        Main.getHolograms().add(Integer.parseInt(args[1]) + 1, hologram);
+                                    }
                                 }
                             }
-                            getCheckLocations().add(l);
+                            getCheckLocations().add(Integer.parseInt(args[1]) - 1, l);
                             setCheck(Integer.parseInt(args[1]), l);
                             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', Main.getMainConfig().getString("Messages.Commands.Admin.SetCheck.Successful").replace("{checkpoint}",args[1])));
                         } else {

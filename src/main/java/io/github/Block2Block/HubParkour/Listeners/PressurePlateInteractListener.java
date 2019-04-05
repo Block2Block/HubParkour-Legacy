@@ -106,6 +106,7 @@ public class PressurePlateInteractListener implements Listener {
         if (e.getPlayer().getLocation().getBlock().getType().equals(startType)) {
             if (e.getPlayer().getLocation().getBlock().getLocation().equals(start)) {
                 if (start == null || end == null || restart == null) {
+                    e.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&',Main.getMainConfig().getString("Messages.Commands.Admin.Not-Setup-Parkour")));
                     return;
                 }
                 if (parkourPlayers.contains(e.getPlayer())) {
@@ -130,6 +131,7 @@ public class PressurePlateInteractListener implements Listener {
             Location l = e.getPlayer().getLocation().getBlock().getLocation();
             if (checkLocations.contains(l)) {
                 if (start == null || end == null || restart == null) {
+                    e.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&',Main.getMainConfig().getString("Messages.Commands.Admin.Not-Setup-Parkour")));
                     return;
                 }
                 if (parkourPlayers.contains(e.getPlayer())) {
@@ -151,6 +153,7 @@ public class PressurePlateInteractListener implements Listener {
         } else if (e.getPlayer().getLocation().getBlock().getType().equals(endType)) {
             if (e.getPlayer().getLocation().getBlock().getLocation().equals(end)) {
                 if (start == null || end == null || restart == null) {
+                    e.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&',Main.getMainConfig().getString("Messages.Commands.Admin.Not-Setup-Parkour")));
                     return;
                 }
                 if (parkourPlayers.contains(e.getPlayer())) {
